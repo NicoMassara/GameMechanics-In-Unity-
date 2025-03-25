@@ -1,106 +1,88 @@
 ﻿using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace _Main.Scripts.WeaponWheel
 {
     public class Inputs : MonoBehaviour
     {
+        [SerializeField] private bool isGamepad = true;
         [SerializeField] private WeaponStorage storage;
-        [SerializeField] private WeaponWheelUI ui;
+        public WeaponWheelInputActions _inputs;
         
-        private Vector3 _lastMousePosition;
+        private Vector2 _lastMousePosition;
         private Vector2 _lastJoystickDirection;
+
+        private void Awake()
+        {
+            _inputs = new WeaponWheelInputActions();
+        }
+
+        private void Start()
+        {
+            _inputs.DefaultActionMap.Enable();
+            _inputs.DefaultActionMap.SlotAxis.started += Inputs_SlotAxis_StartedHandler;
+            _inputs.DefaultActionMap.Select.started += Inputs_Select_StartedHandler;
+        }
 
         private void Update()
         {
-            HandleMousePosition();
-            HandleJoystickPosition();
-            CheckWheelInputs();
-        }
-
-        private void CheckWheelInputs()
-        {
-            if (!Input.anyKeyDown) return;
-            
-            int selectedIndex = -1;
-
-            if (Input.GetKeyDown(KeyCode.Alpha1))
+            if (isGamepad)
             {
-                selectedIndex = 0;
+                HandleJoystickPosition();
             }
-            else if (Input.GetKeyDown(KeyCode.Alpha2))
+            else
             {
-                selectedIndex = 1;
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha3))
-            {
-                selectedIndex = 2;
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha4))
-            {
-                selectedIndex = 3;
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha5))
-            {
-                selectedIndex = 4;
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha6))
-            {
-                selectedIndex = 5;
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha7))
-            {
-                selectedIndex = 6;
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha8))
-            {
-                selectedIndex = 7;
-            }
-            
-            if(selectedIndex > -1)
-            {
-                storage.SelectWeaponByIndex(selectedIndex);
-            }
-
-            if (Input.GetButtonDown("Accept"))
-            {
-                ui.SelectSlot();
+                HandleMousePosition();
             }
         }
 
         private void HandleMousePosition()
         {
-            var mousePosition = Input.mousePosition;
+            Vector2 mousePosition = _inputs.DefaultActionMap.MousePosition.ReadValue<Vector2>();
 
-            if (_lastMousePosition == mousePosition)
+            if (_lastMousePosition != mousePosition)
             {
-                ui.ClearCheckDelay();
-                return;
+                var screenCenter = new Vector2(Screen.width / 2, Screen.height / 2);
+                var distance = Vector2.Distance(mousePosition, screenCenter);
+                var direction = Vector2.zero;
+                if (distance > 100)
+                {
+                    direction = screenCenter - mousePosition;
+                }
+                
+                storage.CalculateAngle(direction);
+                
+                _lastMousePosition = mousePosition;
             }
-
-            var direction =  ui.CenterPosition - mousePosition;
-            
-            ui.CalculateAngle(direction);
-            _lastMousePosition = mousePosition;
         }
 
         private void HandleJoystickPosition()
         {
-            var direction = new Vector2(
-                Input.GetAxis("ControlHorizontal"), 
-                Input.GetAxis("ControlVertical")).normalized;
+            var direction = _inputs.DefaultActionMap.LeftStickDirection.ReadValue<Vector2>();
 
             direction *= -1;
             
-            if (_lastJoystickDirection == direction)
+            storage.CalculateAngle(direction);
+        }
+        
+        private void Inputs_Select_StartedHandler(InputAction.CallbackContext obj)
+        {
+            storage.SelectHighlightedSlot();
+        }
+
+        private void Inputs_SlotAxis_StartedHandler(InputAction.CallbackContext obj)
+        {
+            var value = obj.ReadValue<float>();
+            if (value > 0.1f)
             {
-                ui.ClearCheckDelay();
-                return;
+                storage.ChangeIndexInSlot(doesIncrease: true);
             }
-            
-            ui.CalculateAngle(direction);
-            _lastJoystickDirection = direction;
+            else if (value < -0.1f)
+            {
+                storage.ChangeIndexInSlot(doesIncrease: false);
+            }
         }
     }
 }

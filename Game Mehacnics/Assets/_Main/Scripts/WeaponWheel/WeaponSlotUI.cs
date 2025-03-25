@@ -8,40 +8,56 @@ namespace _Main.Scripts.WeaponWheel
 {
     public class WeaponSlotUI : MonoBehaviour
     {
-        [SerializeField] private WeaponStorage storage;
+        [Header("UI")] 
+        [SerializeField] private Image backgroundColor;
+        [SerializeField] private Image selectedIndicator;
         [SerializeField] private TMP_Text slotText;
+
+        [Header("Values")] 
+        [SerializeField] private WeaponStorage storage;
+        [SerializeField] private Color selectedColor;
+        [SerializeField] private Color highlightColor;
         [Range(0,7)]
         [SerializeField] private int slotIndex;
-
-        private Image _slotImage;
-        private Color _currentColor;
-        private Color _selectedColor = Color.black;
+        
         private Color _defaultColor;
         
         private bool _isSelected;
 
         private void Awake()
         {
-            storage.OnWeaponChange += OnWeaponChangeHandler;
-            _slotImage = GetComponent<Image>();
-            _defaultColor = _slotImage.color;
-            _currentColor = _defaultColor;
+            _defaultColor = backgroundColor.color;
+            selectedIndicator.color = Color.clear;
         }
 
         public void Initialize()
         {
             var slot = storage.GetSlotByIndex(slotIndex);
-            SetSlotText(slot.SelfName, slot.SelfColor);
+            var weaponSlot = slot.SelectCurrentWeapon();
+            SetSlotText(weaponSlot.SelfName, weaponSlot.SelfColor);
+            slot.OnWeaponChange += OnWeaponChangeHandler;
+            slot.OnSlotHighlighted += OnSlotHighlightedHandler;
+            slot.OnSlotSelected += OnSlotSelectedHandler;
         }
 
-        public void SetHighlight(bool bIsHighlighted)
+        private void OnSlotSelectedHandler(bool isSelected)
         {
-            if (_isSelected)
-            {
-                return;
-            }
+            SetSelected(isSelected);
+        }
 
-            _slotImage.color = bIsHighlighted ? Color.white : _currentColor;
+        private void OnSlotHighlightedHandler(bool isHighlighted)
+        {
+            SetHighlight(isHighlighted);
+        }
+
+        private void OnWeaponChangeHandler(string weaponName, Color weaponColor)
+        {
+            SetSlotText(weaponName, weaponColor);
+        }
+
+        private void SetHighlight(bool bIsHighlighted)
+        {
+            backgroundColor.color = bIsHighlighted ? highlightColor : _defaultColor;
         }
 
         private void SetSlotText(string weaponName, Color slotColor)
@@ -50,16 +66,10 @@ namespace _Main.Scripts.WeaponWheel
             slotText.color = slotColor;
         }
 
-        public void SetSelected(bool bIsSelected)
+        private void SetSelected(bool bIsSelected)
         {
             _isSelected = bIsSelected;
-            _slotImage.color = _isSelected ? _selectedColor : _defaultColor;
-            
-        }
-
-        private void OnWeaponChangeHandler(string weaponName, Color slotColor)
-        {
-
+            selectedIndicator.color = _isSelected ?  selectedColor : Color.clear;
         }
 
         public int GetWeaponIndex()
