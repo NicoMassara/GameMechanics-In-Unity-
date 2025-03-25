@@ -21,8 +21,11 @@ namespace _Main.Scripts.WeaponWheel
         private float _lastAngle;
         private int _indexSlot;
         private WeaponSlotUI _currentSlotSelected;
+        private WeaponSlotUI _currentHightlightedSlot;
         private float _checkAngleDelay = 0.1f;
         private float _currentCheckDelay;
+        
+        public Vector3 CenterPosition => centerPosition.position;
 
         private void Awake()
         {
@@ -41,73 +44,75 @@ namespace _Main.Scripts.WeaponWheel
             SelectSlot();
         }
 
-        private void Update()
+        public void ClearCheckDelay()
         {
-            CalculateMouseAngle();
-            HighlightSlot();
+            _currentCheckDelay = 0;
         }
 
-        private void CalculateMouseAngle()
+        public void CalculateAngle(Vector2 direction)
         {
-            var mousePosition = Input.mousePosition;
-            var origin = centerPosition.position;
-            
-            if (_currentCheckDelay <= 0)
+            if (_currentCheckDelay > 0)
             {
-                var direction = origin - mousePosition;
-            
-                float angle = (Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg) + (180 - AngleStartOffset);
-                if (angle < 0)
-                {
-                    angle += 360;
-                }
-            
-                if (Math.Abs(_lastAngle - angle) > 1)
-                {
-                    angleText.text = $"Mouse Angle: {(int)angle}";
-            
-                    _lastAngle = angle;
-                }
-            
-                _currentCheckDelay = _checkAngleDelay;
+                _currentCheckDelay -= Time.deltaTime;
+                return;
             }
-            
-            _currentCheckDelay -= Time.deltaTime;
-            
-            Debug.DrawLine(origin, mousePosition, Color.red);
 
-            for (int i = 0; i < 8; i++)
+            if (direction == Vector2.zero)
             {
-                float baseAngle = AngleStartOffset + (i * SlotAngleSize);
-                float angleRad = baseAngle * Mathf.Deg2Rad;
-                Vector2 angleVector = new Vector2(
-                    origin.x + Mathf.Cos(angleRad) * _slotDebugDistance, 
-                    origin.y + Mathf.Sin(angleRad) * _slotDebugDistance
-                );
-                Debug.DrawLine(origin, angleVector, i > 0 ? Color.green : Color.magenta);
+                StopHighlightSlot();
+                return;
             }
+
+            float angle = (Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg) + (180 - AngleStartOffset);
+            if (angle < 0)
+            {
+                angle += 360;
+            }
+            
+            if (Math.Abs(_lastAngle - angle) > 1)
+            {
+                angleText.text = $"Mouse Angle: {(int)angle}";
+            
+                _lastAngle = angle;
+                HighlightSlot();
+            }
+            
+            _currentCheckDelay = _checkAngleDelay;
         }
 
         private void HighlightSlot()
         {
             _indexSlot = Mathf.FloorToInt(_lastAngle / SlotAngleSize);
-            slots[_indexSlot].SetHighlight(true);
+            var slot = slots[_indexSlot];
+            slot.SetHighlight(true);
 
-            if (_lastIndex != _indexSlot)
+            if (_currentHightlightedSlot != slot)
             {
-                slots[_lastIndex].SetHighlight(false);
-                _lastIndex = _indexSlot;
+                StopHighlightSlot();    
+                _currentHightlightedSlot = slot;
+            }
+        }
+
+        private void StopHighlightSlot()
+        {
+            if (_currentHightlightedSlot != null)
+            {
+                _currentHightlightedSlot.SetHighlight(false);
+                _currentHightlightedSlot = null;
             }
         }
 
         public void SelectSlot()
         {
+            if(_currentHightlightedSlot == null) return;
+            
             if(_currentSlotSelected != null)
             {
                 _currentSlotSelected.SetSelected(false);
             }
 
-            _currentSlotSelected = slots[_indexSlot];
+            _currentSlotSelected = _currentHightlightedSlot;
+            _currentHightlightedSlot = null;
             
             _currentSlotSelected.SetSelected(true);
             

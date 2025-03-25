@@ -1,4 +1,5 @@
 ﻿using System;
+using TMPro;
 using UnityEngine;
 
 namespace _Main.Scripts.WeaponWheel
@@ -7,9 +8,14 @@ namespace _Main.Scripts.WeaponWheel
     {
         [SerializeField] private WeaponStorage storage;
         [SerializeField] private WeaponWheelUI ui;
+        
+        private Vector3 _lastMousePosition;
+        private Vector2 _lastJoystickDirection;
 
         private void Update()
         {
+            HandleMousePosition();
+            HandleJoystickPosition();
             CheckWheelInputs();
         }
 
@@ -57,10 +63,44 @@ namespace _Main.Scripts.WeaponWheel
                 storage.SelectWeaponByIndex(selectedIndex);
             }
 
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetButtonDown("Accept"))
             {
                 ui.SelectSlot();
             }
+        }
+
+        private void HandleMousePosition()
+        {
+            var mousePosition = Input.mousePosition;
+
+            if (_lastMousePosition == mousePosition)
+            {
+                ui.ClearCheckDelay();
+                return;
+            }
+
+            var direction =  ui.CenterPosition - mousePosition;
+            
+            ui.CalculateAngle(direction);
+            _lastMousePosition = mousePosition;
+        }
+
+        private void HandleJoystickPosition()
+        {
+            var direction = new Vector2(
+                Input.GetAxis("ControlHorizontal"), 
+                Input.GetAxis("ControlVertical")).normalized;
+
+            direction *= -1;
+            
+            if (_lastJoystickDirection == direction)
+            {
+                ui.ClearCheckDelay();
+                return;
+            }
+            
+            ui.CalculateAngle(direction);
+            _lastJoystickDirection = direction;
         }
     }
 }
