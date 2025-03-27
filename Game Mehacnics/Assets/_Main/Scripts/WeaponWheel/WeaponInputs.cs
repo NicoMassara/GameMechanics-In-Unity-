@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 
 namespace _Main.Scripts.WeaponWheel
 {
-    public class Inputs : MonoBehaviour
+    public class WeaponInputs : MonoBehaviour
     {
         [SerializeField] private bool isGamepad = true;
         [SerializeField] private WeaponStorage storage;
