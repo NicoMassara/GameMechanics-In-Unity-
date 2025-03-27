@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Transactions;
 using _Main.Scripts.AstroneerCrafting.Managers;
 using _Main.Scripts.AstroneerCrafting.Materials;
 using UnityEngine;
@@ -6,7 +8,7 @@ using UnityEngine.Events;
 
 namespace _Main.Scripts.AstroneerCrafting.Printer
 {
-    public class PrinterModel : MonoBehaviour
+    public abstract class PrinterModel : MonoBehaviour, IInteractable
     {
         [Header("Values")]
         [Space]
@@ -24,18 +26,22 @@ namespace _Main.Scripts.AstroneerCrafting.Printer
 
         private List<PrinterSlot> _slotToGetMaterial = new List<PrinterSlot>();
         private GameManager _gameManager;
+        private MaterialEnum _itemToPrint;
         private bool _canPrint = false;
         private bool _isPrinting = false;
         private float _printTimer = 0f;
-        private MaterialEnum _itemToPrint;
         private float _printDelayTimer = 0f;
+        private int _currentRecipeIndex;
         
         public UnityAction<bool> OnReadyToPrint;
         public UnityAction OnPrint;
         public UnityAction OnPrintEnd;
-        public UnityAction OnRecipeChange;
+        public UnityAction<RecipeEnum> OnRecipeChange;
+        public Transform SelfTransform => transform;
+        public event Action<bool> OnInteract;
 
-        private void Start()
+
+        private void Awake()
         {
             _gameManager = GameManager.Instance;
 
@@ -48,31 +54,67 @@ namespace _Main.Scripts.AstroneerCrafting.Printer
             outSlot.OnMaterialDetached += OutSlot_OnMaterialDetachedHandler;
 
             OnRecipeChange += OnRecipeChangeHandler;
-            OnReadyToPrint?.Invoke(false);
+            
+            SetRecipeList();
+            SetCurrentRecipe(AvailableRecipes[0]);
         }
 
-        private void Update()
+        private void Start()
+        {
+            OnReadyToPrint?.Invoke(false);
+            OnRecipeChange.Invoke(currentRecipe);
+        }
+
+        protected virtual void Update()
         {
             if (_isPrinting)
             {
                 HandlePrinting();
             }
-            else if (Input.GetKeyDown(KeyCode.Space))
-            {
-                StartPrinting();
-            }
-            else if (Input.GetKeyDown(KeyCode.S))
-            {
-                OnRecipeChange.Invoke();
-            }
-            else if (Input.GetKeyDown(KeyCode.R))
-            {
-                outSlot.DetachMaterial();
-            }
+        }
+        
+        public void Interact()
+        {
+            OnInteract?.Invoke(true);
         }
 
-        private void StartPrinting()
+        protected abstract void SetRecipeList();
+
+        public void CycleRecipes(bool isPositive)
         {
+            if(_isPrinting) return;
+            if(AvailableRecipes == null) return;
+            if(AvailableRecipes.Length <= 1) return;
+            
+            
+            var recipeCount = AvailableRecipes.Length;
+            
+            _currentRecipeIndex = isPositive ? _currentRecipeIndex + 1 : _currentRecipeIndex - 1;
+
+
+            if (_currentRecipeIndex >= recipeCount)
+            {
+                _currentRecipeIndex = 0;
+            }
+            else if (_currentRecipeIndex <= -1)
+            {
+                _currentRecipeIndex = recipeCount - 1;
+            }
+            
+            SetCurrentRecipe(AvailableRecipes[_currentRecipeIndex]);
+        }
+
+        protected void SetCurrentRecipe(RecipeEnum recipeEnum)
+        {
+            currentRecipe = recipeEnum;
+            OnRecipeChange.Invoke(currentRecipe);
+        }
+
+        public void StartPrinting()
+        {
+            if(_isPrinting) return;
+            if(outSlot.HasMaterialAttached) return;
+            
             if (_canPrint)
             {
                 _isPrinting = true;
@@ -96,7 +138,8 @@ namespace _Main.Scripts.AstroneerCrafting.Printer
 
         private void CalculateRecipe()
         {
-            if(outSlot.HasMaterialAttached) return;
+            if(outSlot.HasMaterialAttached ||
+               currentRecipe == RecipeEnum.None) return;
             
             var recipeData = _gameManager.RecipeManager.GetRecipeDataByEnum(currentRecipe);
             var ingredientsCount = recipeData.MaterialNeededCount;
@@ -183,7 +226,7 @@ namespace _Main.Scripts.AstroneerCrafting.Printer
             CalculateRecipe();
         }
         
-        private void OnRecipeChangeHandler()
+        private void OnRecipeChangeHandler(RecipeEnum recipeData)
         {
             CalculateRecipe();
         }
@@ -194,5 +237,10 @@ namespace _Main.Scripts.AstroneerCrafting.Printer
         }
 
         #endregion
+
+        public void StopInteraction()
+        {
+            OnInteract?.Invoke(false);
+        }
     }
 }

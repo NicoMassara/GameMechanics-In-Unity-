@@ -18,18 +18,23 @@ namespace _Main.Scripts.Locomotion
         private Vector3 _movementDirection;
         public float Velocity => _rigidbody.velocity.magnitude;
 
-        private void Awake()
+        protected virtual void Awake()
         {
             _rigidbody = GetComponent<Rigidbody>();
         }
 
-        private void Start()
+        protected virtual void Start()
         {
             _rigidbody.useGravity = false;
             _rigidbody.freezeRotation = true;
         }
 
-        private void FixedUpdate()
+        protected void Update()
+        {
+            
+        }
+
+        protected virtual void FixedUpdate()
         {
             MoveCharacter();
         }

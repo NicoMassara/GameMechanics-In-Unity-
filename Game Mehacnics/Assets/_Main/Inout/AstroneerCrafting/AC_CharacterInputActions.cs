@@ -44,6 +44,15 @@ public partial class @AC_CharacterInputActions: IInputActionCollection2, IDispos
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Interact"",
+                    ""type"": ""Button"",
+                    ""id"": ""99831ab0-b4c5-4efc-80e1-f36a1ae595e5"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -134,6 +143,107 @@ public partial class @AC_CharacterInputActions: IInputActionCollection2, IDispos
                     ""action"": ""CameraAxis"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3c1aceba-b109-41d0-a478-52d9acafa4c9"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""Printer"",
+            ""id"": ""0b75586b-5c1b-4263-b6bc-81a6732b26bc"",
+            ""actions"": [
+                {
+                    ""name"": ""CycleRecipe"",
+                    ""type"": ""Value"",
+                    ""id"": ""1d2a6a08-4b73-4fdb-82d9-22fd219fd34d"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Print"",
+                    ""type"": ""Button"",
+                    ""id"": ""37d18a90-a39d-43c6-b0d1-69d617bff8a8"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Leave"",
+                    ""type"": ""Button"",
+                    ""id"": ""9c9eeab1-0b1d-41e7-a1b6-4b7a7c97db8d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""d2655798-5aed-4f57-bf99-96e6d1dda7cd"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CycleRecipe"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""05a6d471-310d-4272-a9b3-7d947b8f9a4f"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""CycleRecipe"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""9d1a2886-eafe-442b-bd61-3d9ee136d464"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""CycleRecipe"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""42a3de26-a469-4ddd-98eb-83972f054964"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Print"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ce195850-8707-4eba-a6a8-30b8ed55ab17"",
+                    ""path"": ""<Keyboard>/p"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Leave"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -172,6 +282,12 @@ public partial class @AC_CharacterInputActions: IInputActionCollection2, IDispos
         m_Default = asset.FindActionMap("Default", throwIfNotFound: true);
         m_Default_MovementAxis = m_Default.FindAction("MovementAxis", throwIfNotFound: true);
         m_Default_CameraAxis = m_Default.FindAction("CameraAxis", throwIfNotFound: true);
+        m_Default_Interact = m_Default.FindAction("Interact", throwIfNotFound: true);
+        // Printer
+        m_Printer = asset.FindActionMap("Printer", throwIfNotFound: true);
+        m_Printer_CycleRecipe = m_Printer.FindAction("CycleRecipe", throwIfNotFound: true);
+        m_Printer_Print = m_Printer.FindAction("Print", throwIfNotFound: true);
+        m_Printer_Leave = m_Printer.FindAction("Leave", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -235,12 +351,14 @@ public partial class @AC_CharacterInputActions: IInputActionCollection2, IDispos
     private List<IDefaultActions> m_DefaultActionsCallbackInterfaces = new List<IDefaultActions>();
     private readonly InputAction m_Default_MovementAxis;
     private readonly InputAction m_Default_CameraAxis;
+    private readonly InputAction m_Default_Interact;
     public struct DefaultActions
     {
         private @AC_CharacterInputActions m_Wrapper;
         public DefaultActions(@AC_CharacterInputActions wrapper) { m_Wrapper = wrapper; }
         public InputAction @MovementAxis => m_Wrapper.m_Default_MovementAxis;
         public InputAction @CameraAxis => m_Wrapper.m_Default_CameraAxis;
+        public InputAction @Interact => m_Wrapper.m_Default_Interact;
         public InputActionMap Get() { return m_Wrapper.m_Default; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -256,6 +374,9 @@ public partial class @AC_CharacterInputActions: IInputActionCollection2, IDispos
             @CameraAxis.started += instance.OnCameraAxis;
             @CameraAxis.performed += instance.OnCameraAxis;
             @CameraAxis.canceled += instance.OnCameraAxis;
+            @Interact.started += instance.OnInteract;
+            @Interact.performed += instance.OnInteract;
+            @Interact.canceled += instance.OnInteract;
         }
 
         private void UnregisterCallbacks(IDefaultActions instance)
@@ -266,6 +387,9 @@ public partial class @AC_CharacterInputActions: IInputActionCollection2, IDispos
             @CameraAxis.started -= instance.OnCameraAxis;
             @CameraAxis.performed -= instance.OnCameraAxis;
             @CameraAxis.canceled -= instance.OnCameraAxis;
+            @Interact.started -= instance.OnInteract;
+            @Interact.performed -= instance.OnInteract;
+            @Interact.canceled -= instance.OnInteract;
         }
 
         public void RemoveCallbacks(IDefaultActions instance)
@@ -283,6 +407,68 @@ public partial class @AC_CharacterInputActions: IInputActionCollection2, IDispos
         }
     }
     public DefaultActions @Default => new DefaultActions(this);
+
+    // Printer
+    private readonly InputActionMap m_Printer;
+    private List<IPrinterActions> m_PrinterActionsCallbackInterfaces = new List<IPrinterActions>();
+    private readonly InputAction m_Printer_CycleRecipe;
+    private readonly InputAction m_Printer_Print;
+    private readonly InputAction m_Printer_Leave;
+    public struct PrinterActions
+    {
+        private @AC_CharacterInputActions m_Wrapper;
+        public PrinterActions(@AC_CharacterInputActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @CycleRecipe => m_Wrapper.m_Printer_CycleRecipe;
+        public InputAction @Print => m_Wrapper.m_Printer_Print;
+        public InputAction @Leave => m_Wrapper.m_Printer_Leave;
+        public InputActionMap Get() { return m_Wrapper.m_Printer; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(PrinterActions set) { return set.Get(); }
+        public void AddCallbacks(IPrinterActions instance)
+        {
+            if (instance == null || m_Wrapper.m_PrinterActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_PrinterActionsCallbackInterfaces.Add(instance);
+            @CycleRecipe.started += instance.OnCycleRecipe;
+            @CycleRecipe.performed += instance.OnCycleRecipe;
+            @CycleRecipe.canceled += instance.OnCycleRecipe;
+            @Print.started += instance.OnPrint;
+            @Print.performed += instance.OnPrint;
+            @Print.canceled += instance.OnPrint;
+            @Leave.started += instance.OnLeave;
+            @Leave.performed += instance.OnLeave;
+            @Leave.canceled += instance.OnLeave;
+        }
+
+        private void UnregisterCallbacks(IPrinterActions instance)
+        {
+            @CycleRecipe.started -= instance.OnCycleRecipe;
+            @CycleRecipe.performed -= instance.OnCycleRecipe;
+            @CycleRecipe.canceled -= instance.OnCycleRecipe;
+            @Print.started -= instance.OnPrint;
+            @Print.performed -= instance.OnPrint;
+            @Print.canceled -= instance.OnPrint;
+            @Leave.started -= instance.OnLeave;
+            @Leave.performed -= instance.OnLeave;
+            @Leave.canceled -= instance.OnLeave;
+        }
+
+        public void RemoveCallbacks(IPrinterActions instance)
+        {
+            if (m_Wrapper.m_PrinterActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IPrinterActions instance)
+        {
+            foreach (var item in m_Wrapper.m_PrinterActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_PrinterActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public PrinterActions @Printer => new PrinterActions(this);
     private int m_KeyboardSchemeIndex = -1;
     public InputControlScheme KeyboardScheme
     {
@@ -305,5 +491,12 @@ public partial class @AC_CharacterInputActions: IInputActionCollection2, IDispos
     {
         void OnMovementAxis(InputAction.CallbackContext context);
         void OnCameraAxis(InputAction.CallbackContext context);
+        void OnInteract(InputAction.CallbackContext context);
+    }
+    public interface IPrinterActions
+    {
+        void OnCycleRecipe(InputAction.CallbackContext context);
+        void OnPrint(InputAction.CallbackContext context);
+        void OnLeave(InputAction.CallbackContext context);
     }
 }

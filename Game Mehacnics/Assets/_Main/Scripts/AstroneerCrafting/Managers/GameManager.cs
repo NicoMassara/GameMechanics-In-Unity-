@@ -9,6 +9,7 @@ namespace _Main.Scripts.AstroneerCrafting.Managers
         public static GameManager Instance { get; private set; }
         public MaterialManager MaterialManager { get; private set; }
         public RecipeManager RecipeManager { get; private set; }
+        public CameraManager CameraManager { get; private set; }
         
         [SerializeField] private MaterialObject materialPrefab;
 
@@ -18,6 +19,7 @@ namespace _Main.Scripts.AstroneerCrafting.Managers
             
             MaterialManager = new MaterialManager();
             RecipeManager = new RecipeManager();
+            CameraManager = new CameraManager();
         }
 
         private void MakeSingleton()
