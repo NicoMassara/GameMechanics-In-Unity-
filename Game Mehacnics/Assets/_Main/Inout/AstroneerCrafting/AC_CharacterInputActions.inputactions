@@ -132,6 +132,17 @@
                     "action": "Interact",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c9e112ab-38c8-4512-a4ad-ceb55f577309",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Interact",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -169,7 +180,7 @@
             ],
             "bindings": [
                 {
-                    "name": "1D Axis",
+                    "name": "KeyboardAxis",
                     "id": "d2655798-5aed-4f57-bf99-96e6d1dda7cd",
                     "path": "1DAxis",
                     "interactions": "",
@@ -202,6 +213,72 @@
                     "isPartOfComposite": true
                 },
                 {
+                    "name": "GamepadD-Pad",
+                    "id": "f74c0f13-5993-4f53-87b9-89a20121954d",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CycleRecipe",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "f22ae4b6-b810-4a8c-9d68-1d69ae7b5280",
+                    "path": "<Gamepad>/dpad/left",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CycleRecipe",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "4bd3f4dc-fce3-49a9-b6d5-44fb3c2bd865",
+                    "path": "<Gamepad>/dpad/right",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CycleRecipe",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "GamepadJoystick",
+                    "id": "58573289-a134-4ca1-8632-14dff270c86d",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CycleRecipe",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "cdce9504-d145-42ba-8c2d-ff78131afcb3",
+                    "path": "<Gamepad>/leftStick/left",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CycleRecipe",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "f60eb7be-1ae8-4821-bb3c-46c676c629a1",
+                    "path": "<Gamepad>/leftStick/right",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CycleRecipe",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
                     "name": "",
                     "id": "42a3de26-a469-4ddd-98eb-83972f054964",
                     "path": "<Keyboard>/space",
@@ -214,11 +291,33 @@
                 },
                 {
                     "name": "",
+                    "id": "44afbc82-49c1-4f11-94c0-a7457d0097ec",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Print",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "ce195850-8707-4eba-a6a8-30b8ed55ab17",
                     "path": "<Keyboard>/p",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard",
+                    "action": "Leave",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ae97eed0-16e9-4c96-b9f5-5d77fb2f05fc",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
                     "action": "Leave",
                     "isComposite": false,
                     "isPartOfComposite": false

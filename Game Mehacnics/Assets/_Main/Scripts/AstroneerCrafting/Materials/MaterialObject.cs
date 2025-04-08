@@ -1,12 +1,13 @@
 ﻿using System;
 using _Main.Scripts.AstroneerCrafting.Managers;
+using _Tools.SingleHandledPool;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace _Main.Scripts.AstroneerCrafting.Materials
 {
-    public class MaterialObject : MonoBehaviour
+    public class MaterialObject : MonoBehaviour, IPoolable<MaterialObject>
     {
         [SerializeField] private MaterialEnum materialType;
         [SerializeField] private MeshRenderer meshRenderer;
@@ -18,6 +19,8 @@ namespace _Main.Scripts.AstroneerCrafting.Materials
         public bool IsAttached { get; private set; }
         
         private readonly ScaleModifier _scaleModifier = new ScaleModifier();
+        
+        public event Action<MaterialObject> OnDisable;
 
         private void Awake()
         {
@@ -42,18 +45,14 @@ namespace _Main.Scripts.AstroneerCrafting.Materials
         {
             if (type != MaterialEnum.None)
             {
-                MaterialType = type;
-                UpdateMaterialColor(); 
+                var materialData = GameManager.Instance.MaterialManager.GetMaterialDataByEnum(type);
+                UpdateMaterialColor(materialData.SelfColor); 
             }
         }
 
-        private void UpdateMaterialColor()
+        public void UpdateMaterialColor(Color color)
         {
-            if (MaterialType != MaterialEnum.None)
-            {
-                var materialData = GameManager.Instance.MaterialManager.GetMaterialDataByEnum(MaterialType);
-                meshRenderer.material.color = materialData.SelfColor;
-            }
+            meshRenderer.material.color = color;
         }
 
         public void AttachToSlot(Transform slotTransform)
@@ -84,6 +83,19 @@ namespace _Main.Scripts.AstroneerCrafting.Materials
         public void SetScale(float newScale)
         {
             transform.localScale = newScale * Vector3.one;
+        }
+        
+        public void Reset()
+        {
+            _rigidbody.isKinematic = false;
+            transform.parent = null;
+            IsAttached = false;
+            gameObject.SetActive(false);
+        }   
+
+        public void Enable()
+        {
+            gameObject.SetActive(true);
         }
     }
 }

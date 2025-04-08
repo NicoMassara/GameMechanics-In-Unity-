@@ -32,7 +32,11 @@ namespace _Main.Scripts.AstroneerCrafting.Printer
         private float _printTimer = 0f;
         private float _printDelayTimer = 0f;
         private int _currentRecipeIndex;
-        
+        private readonly float _cycleDelay = 0.75f;
+        private float _cycleDelayTimer;
+
+
+        public bool IsQuick { get; private set; } = true;
         public UnityAction<bool> OnReadyToPrint;
         public UnityAction OnPrint;
         public UnityAction OnPrintEnd;
@@ -67,6 +71,11 @@ namespace _Main.Scripts.AstroneerCrafting.Printer
 
         protected virtual void Update()
         {
+            if (_cycleDelayTimer > 0)
+            {
+                _cycleDelayTimer -= Time.deltaTime;
+            }
+
             if (_isPrinting)
             {
                 HandlePrinting();
@@ -85,6 +94,7 @@ namespace _Main.Scripts.AstroneerCrafting.Printer
             if(_isPrinting) return;
             if(AvailableRecipes == null) return;
             if(AvailableRecipes.Length <= 1) return;
+            if(_cycleDelayTimer > 0) return;
             
             
             var recipeCount = AvailableRecipes.Length;
@@ -102,6 +112,7 @@ namespace _Main.Scripts.AstroneerCrafting.Printer
             }
             
             SetCurrentRecipe(AvailableRecipes[_currentRecipeIndex]);
+            _cycleDelayTimer = _cycleDelay;
         }
 
         protected void SetCurrentRecipe(RecipeEnum recipeEnum)
@@ -151,6 +162,8 @@ namespace _Main.Scripts.AstroneerCrafting.Printer
             {
                 for (int j = 0; j < materialSlot.Length; j++)
                 {
+                    //Debug.Log($"Material in Slot {j+1}: {materialSlot[j].GetAttachedMaterial()}");
+                    
                     if (recipeData.MaterialNeeded[i] == materialSlot[j].GetAttachedMaterial())
                     {
                         ingredientsCheck++;
@@ -159,6 +172,7 @@ namespace _Main.Scripts.AstroneerCrafting.Printer
                 }
             }
             
+            //Debug.Log($"Needed: {ingredientsCount}, Check: {ingredientsCheck}");
 
             if (ingredientsCheck == ingredientsCount)
             {
@@ -184,7 +198,7 @@ namespace _Main.Scripts.AstroneerCrafting.Printer
                 {
                     foreach (PrinterSlot slot in _slotToGetMaterial)
                     {
-                        slot.DetachMaterial();
+                        slot.RemoveMaterial();
                     }
                     
                     _slotToGetMaterial.Clear();

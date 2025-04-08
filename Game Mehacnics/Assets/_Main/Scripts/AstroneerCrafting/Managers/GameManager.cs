@@ -17,7 +17,7 @@ namespace _Main.Scripts.AstroneerCrafting.Managers
         {
             MakeSingleton();
             
-            MaterialManager = new MaterialManager();
+            MaterialManager = new MaterialManager(CreateMaterialObject);
             RecipeManager = new RecipeManager();
             CameraManager = new CameraManager();
         }
