@@ -1,13 +1,11 @@
-﻿using System;
-using _Main.Scripts.AstroneerCrafting.Managers;
+﻿using _Main.Scripts.AstroneerCrafting.Managers;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace _Main.Scripts.AstroneerCrafting.Printer
 {
     public class PrinterView : MonoBehaviour
     {
-        private PrinterModel _printerModel;
+        private PrinterModel _model;
         [Header("Lights")]
         [SerializeField] private MeshRenderer lightMesh;
         [SerializeField] private Color idleColor = Color.red;
@@ -17,15 +15,21 @@ namespace _Main.Scripts.AstroneerCrafting.Printer
         [Header("Recipe Visuals")]
         [SerializeField] private SpriteRenderer[] slotVisual;
         [SerializeField] private SpriteRenderer slotOutVisual;
-
+        
+        private MaterialManager _materialManager;
+        private RecipeManager _recipeManager;
+        
         private void Awake()
         {
-            _printerModel = GetComponent<PrinterModel>();
+            _model = GetComponent<PrinterModel>();
             
-            _printerModel.OnReadyToPrint += OnReadyToPrintHandler;
-            _printerModel.OnPrint += OnPrintHandler;
-            _printerModel.OnPrintEnd += OnPrintEndHandler;
-            _printerModel.OnRecipeChange += OnRecipeChangeHandler;
+            _model.OnReadyToPrint += OnReadyToPrintHandler;
+            _model.OnPrint += OnPrintHandler;
+            _model.OnPrintEnd += OnPrintEndHandler;
+            _model.OnRecipeChange += OnRecipeChangeHandler;
+
+            _materialManager = GameManager.Instance.MaterialManager;
+            _recipeManager = GameManager.Instance.RecipeManager;
         }
 
         private void OnReadyToPrintHandler(bool isReady)
@@ -43,34 +47,27 @@ namespace _Main.Scripts.AstroneerCrafting.Printer
             lightMesh.material.color = printedColor;
         }
         
-        private void OnRecipeChangeHandler(RecipeEnum recipeEnum)
+        private void OnRecipeChangeHandler(MaterialEnum recipeEnum)
         {
-            if(recipeEnum == RecipeEnum.None) return;
+            if(recipeEnum == MaterialEnum.None) return;
             
-            var gameManager = GameManager.Instance;
-            
-            var recipeData = gameManager.RecipeManager.GetRecipeDataByEnum(recipeEnum);
-
-            var materialsNeeded = recipeData.MaterialNeeded;
-            var materialManager = gameManager.MaterialManager;
+            var recipeData = _recipeManager.GetRecipeDataByEnum(recipeEnum);
             var materialCount = recipeData.MaterialNeededCount;
-
-            ResetSlotsColor();
             
-            if (materialCount > slotVisual.Length)
+            if (slotVisual.Length >= materialCount)
             {
-                Debug.Log("This Recipe is too large to be printed");
-                return;
+                var materialsNeeded = recipeData.MaterialNeeded;
+
+                ResetSlotsColor();
+                
+                for (int i = 0; i < materialCount; i++)
+                {
+                    var materialData = _materialManager.GetMaterialDataByEnum(materialsNeeded[i]);
+                    slotVisual[i].color = materialData.SelfColor;
+                }
             }
             
-
-            for (int i = 0; i < materialCount; i++)
-            {
-                var materialData = materialManager.GetMaterialDataByEnum(materialsNeeded[i]);
-                slotVisual[i].color = materialData.SelfColor;
-            }
-            
-            slotOutVisual.color = materialManager.GetMaterialDataByEnum(recipeData.MaterialGotten).SelfColor;
+            slotOutVisual.color = _materialManager.GetMaterialDataByEnum(recipeData.MaterialGotten).SelfColor;
         }
 
         private void ResetSlotsColor()

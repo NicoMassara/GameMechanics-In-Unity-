@@ -1,6 +1,7 @@
 ﻿using System;
 using _Main.Scripts.AstroneerCrafting.Materials;
 using _Tools.SingleHandledPool;
+using UnityEngine;
 
 namespace _Main.Scripts.AstroneerCrafting.Managers
 {

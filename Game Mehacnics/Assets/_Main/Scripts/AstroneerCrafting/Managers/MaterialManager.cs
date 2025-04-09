@@ -9,7 +9,8 @@ namespace _Main.Scripts.AstroneerCrafting.Managers
     {
         private readonly MaterialDataManager _data;
         private readonly MaterialPool _pool;
-
+        
+        
         public MaterialManager(Func<MaterialObject> factoryMethod)
         {
             _pool = new MaterialPool(factoryMethod);
@@ -20,7 +21,7 @@ namespace _Main.Scripts.AstroneerCrafting.Managers
         {
             var item = _pool.GetItem();
             var color = _data.GetMaterialDataByEnum(materialEnum).SelfColor;
-            item.UpdateMaterialColor(color);
+            item.UpdateMaterialColor(color, materialEnum);
             return item;
         }
 

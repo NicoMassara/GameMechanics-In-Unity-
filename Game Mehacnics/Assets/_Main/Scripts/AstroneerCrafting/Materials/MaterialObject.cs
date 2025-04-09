@@ -46,12 +46,13 @@ namespace _Main.Scripts.AstroneerCrafting.Materials
             if (type != MaterialEnum.None)
             {
                 var materialData = GameManager.Instance.MaterialManager.GetMaterialDataByEnum(type);
-                UpdateMaterialColor(materialData.SelfColor); 
+                UpdateMaterialColor(materialData.SelfColor, type); 
             }
         }
 
-        public void UpdateMaterialColor(Color color)
+        public void UpdateMaterialColor(Color color, MaterialEnum typeEnum)
         {
+            MaterialType = typeEnum;
             meshRenderer.material.color = color;
         }
 
@@ -84,18 +85,17 @@ namespace _Main.Scripts.AstroneerCrafting.Materials
         {
             transform.localScale = newScale * Vector3.one;
         }
-        
-        public void Reset()
+
+        public void Disable()
         {
-            _rigidbody.isKinematic = false;
-            transform.parent = null;
-            IsAttached = false;
             gameObject.SetActive(false);
+            OnDisable?.Invoke(this);
         }   
 
         public void Enable()
         {
             gameObject.SetActive(true);
         }
+        
     }
 }

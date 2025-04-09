@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Transactions;
 using _Main.Scripts.AstroneerCrafting.Managers;
 using _Main.Scripts.AstroneerCrafting.Materials;
 using UnityEngine;
@@ -8,253 +6,317 @@ using UnityEngine.Events;
 
 namespace _Main.Scripts.AstroneerCrafting.Printer
 {
-    public abstract class PrinterModel : MonoBehaviour, IInteractable
+    public class PrinterModel : MonoBehaviour, IInteractable
     {
         [Header("Values")]
-        [Space]
-        [Range(1, 15)]
-        [SerializeField] private int timeToPrint;
-        [Range(0,1)]
-        [SerializeField] private float printDelay = 0.5f;
-        [SerializeField] private RecipeEnum currentRecipe;
+        [SerializeField] private PrinterDataSo printerData;
         [Header("Objects")]
         [Space] 
-        [SerializeField] private PrinterSlot[] materialSlot;
-        [SerializeField] private PrinterSlot outSlot;
+        [SerializeField] private MaterialSlot[] inMaterialSlot;
+        [SerializeField] private MaterialSlot outMaterialSlot;
 
-        public RecipeEnum[] AvailableRecipes { get; protected set; }
-
-        private List<PrinterSlot> _slotToGetMaterial = new List<PrinterSlot>();
-        private GameManager _gameManager;
-        private MaterialEnum _itemToPrint;
-        private bool _canPrint = false;
-        private bool _isPrinting = false;
-        private float _printTimer = 0f;
-        private float _printDelayTimer = 0f;
-        private int _currentRecipeIndex;
-        private readonly float _cycleDelay = 0.75f;
-        private float _cycleDelayTimer;
-
-
-        public bool IsQuick { get; private set; } = true;
+        private PrinterRecipeController _recipeController;
+        private PrintController _printController;
+        
+        private MaterialEnum _currentRecipe;
+        private RecipeManager _recipeManager;
+        private bool _canPrint;
+        private MaterialSlot[] _slotsToUse;
+        private bool _isPrinting;
+        
+        public Transform SelfTransform => transform;
+        
+        public event Action<bool> OnInteract;
         public UnityAction<bool> OnReadyToPrint;
         public UnityAction OnPrint;
         public UnityAction OnPrintEnd;
-        public UnityAction<RecipeEnum> OnRecipeChange;
-        public Transform SelfTransform => transform;
-        public event Action<bool> OnInteract;
-
+        public UnityAction<MaterialEnum> OnRecipeChange;
 
         private void Awake()
         {
-            _gameManager = GameManager.Instance;
+            _recipeController = new PrinterRecipeController(printerData.AvailableRecipes);
+            _printController = new PrintController(outMaterialSlot, GameManager.Instance.MaterialManager);
+            
+            _recipeController.OnRecipeChange += RecipeController_OnRecipeChangeHandler;
+            _printController.OnPrinting += PrintController_OnPrintHandler;
+            _printController.OnPrintEnd += PrintController_OnPrintEnd;
 
-            foreach (var slot in materialSlot)
+            foreach (var slot in inMaterialSlot)
             {
-                slot.OnMaterialAttached += Slot_OnMaterialAttachedHandler;
-                slot.OnMaterialDetached += Slot_OnMaterialDetachedHandler;
+                slot.OnMaterialAttached += InMaterialSlot_OnMaterialAttachedHandler;
+                slot.OnMaterialDetached += InMaterialSlot_OnMaterialDetachedHandler;
             }
             
-            outSlot.OnMaterialDetached += OutSlot_OnMaterialDetachedHandler;
+            outMaterialSlot.OnMaterialDetached += OutMaterialSlot_OnMaterialDetachedHandler;
 
-            OnRecipeChange += OnRecipeChangeHandler;
-            
-            SetRecipeList();
-            SetCurrentRecipe(AvailableRecipes[0]);
         }
 
         private void Start()
         {
-            OnReadyToPrint?.Invoke(false);
-            OnRecipeChange.Invoke(currentRecipe);
+            _recipeManager = GameManager.Instance.RecipeManager;
+            _recipeController.Initialize();
+            _printController.Initialize();
         }
 
-        protected virtual void Update()
+        private void Update()
         {
-            if (_cycleDelayTimer > 0)
-            {
-                _cycleDelayTimer -= Time.deltaTime;
-            }
-
-            if (_isPrinting)
-            {
-                HandlePrinting();
-            }
+            _recipeController.Execute();
+            _printController.Execute();
         }
-        
+
         public void Interact()
         {
             OnInteract?.Invoke(true);
         }
-
-        protected abstract void SetRecipeList();
-
-        public void CycleRecipes(bool isPositive)
+        
+        public void StopInteraction()
         {
-            if(_isPrinting) return;
-            if(AvailableRecipes == null) return;
-            if(AvailableRecipes.Length <= 1) return;
-            if(_cycleDelayTimer > 0) return;
-            
-            
-            var recipeCount = AvailableRecipes.Length;
-            
-            _currentRecipeIndex = isPositive ? _currentRecipeIndex + 1 : _currentRecipeIndex - 1;
-
-
-            if (_currentRecipeIndex >= recipeCount)
-            {
-                _currentRecipeIndex = 0;
-            }
-            else if (_currentRecipeIndex <= -1)
-            {
-                _currentRecipeIndex = recipeCount - 1;
-            }
-            
-            SetCurrentRecipe(AvailableRecipes[_currentRecipeIndex]);
-            _cycleDelayTimer = _cycleDelay;
+            OnInteract?.Invoke(false);
         }
 
-        protected void SetCurrentRecipe(RecipeEnum recipeEnum)
-        {
-            currentRecipe = recipeEnum;
-            OnRecipeChange.Invoke(currentRecipe);
-        }
+        #region Recipe
 
-        public void StartPrinting()
+        public void CycleRecipes(bool isForward)
         {
             if(_isPrinting) return;
-            if(outSlot.HasMaterialAttached) return;
             
-            if (_canPrint)
-            {
-                _isPrinting = true;
-                _printTimer = timeToPrint + printDelay;
-                
-                var shrinkData = new ScaleData(0f, 1f, timeToPrint);
-                
-                foreach (PrinterSlot slot in _slotToGetMaterial)
-                {
-                    slot.ChangeMaterialScale(shrinkData);
-                }
-                
-                _printDelayTimer = printDelay;
-                OnPrint?.Invoke();
-            }
-            else
-            {
-                Debug.Log("Can't print the recipe!");
-            }
+            _recipeController.CycleRecipes(isForward);
         }
 
         private void CalculateRecipe()
         {
-            if(outSlot.HasMaterialAttached ||
-               currentRecipe == RecipeEnum.None) return;
+            if (outMaterialSlot.HasMaterialAttached)
+            {
+                return;
+            }
             
-            var recipeData = _gameManager.RecipeManager.GetRecipeDataByEnum(currentRecipe);
-            var ingredientsCount = recipeData.MaterialNeededCount;
-            var ingredientsCheck = 0; //Increase by one every time finds a correct ingredient
-            
-            _slotToGetMaterial.Clear();
+            var tempTuple = _recipeController.CalculateRecipe(inMaterialSlot, _recipeManager.GetRecipeDataByEnum(_currentRecipe));
+            _canPrint = tempTuple.Item1;
+            _slotsToUse = tempTuple.Item2;
 
-            for (int i = 0; i < ingredientsCount; i++)
-            {
-                for (int j = 0; j < materialSlot.Length; j++)
-                {
-                    //Debug.Log($"Material in Slot {j+1}: {materialSlot[j].GetAttachedMaterial()}");
-                    
-                    if (recipeData.MaterialNeeded[i] == materialSlot[j].GetAttachedMaterial())
-                    {
-                        ingredientsCheck++;
-                        _slotToGetMaterial.Add(materialSlot[j]);
-                    }
-                }
-            }
-            
-            //Debug.Log($"Needed: {ingredientsCount}, Check: {ingredientsCheck}");
-
-            if (ingredientsCheck == ingredientsCount)
-            {
-                _canPrint = true;
-                _itemToPrint = recipeData.MaterialGotten;
-            }
-            else
-            {
-                _canPrint = false;
-                _itemToPrint = MaterialEnum.None;
-            }
-            
             OnReadyToPrint?.Invoke(_canPrint);
-        }
-        
-        private void HandlePrinting()
-        {
-            if (_printTimer > 0)
-            {
-                _printTimer -= Time.deltaTime;
-                
-                if (_printTimer <= 0)
-                {
-                    foreach (PrinterSlot slot in _slotToGetMaterial)
-                    {
-                        slot.RemoveMaterial();
-                    }
-                    
-                    _slotToGetMaterial.Clear();
-
-                    OnPrintEnd?.Invoke();
-                    _isPrinting = false;
-                }
-                
-                if (_printDelayTimer > 0)
-                {
-                    _printDelayTimer -= Time.deltaTime;
-                    if (_printDelayTimer <= 0)
-                    {
-                        PrintOutMaterial();
-                    }
-                }
-            }
-        }
-
-        private void PrintOutMaterial()
-        {
-            var expandData = new ScaleData(1f, 0f, timeToPrint);
-            var newMaterial = _gameManager.CreateMaterialObject();
-            newMaterial.SetMaterial(_itemToPrint);
-            outSlot.AttachMaterial(newMaterial);
-            outSlot.SetMaterialScale(0f);
-            outSlot.ChangeMaterialScale(expandData);
-        }
-
-        #region Handlers
-
-        private void Slot_OnMaterialAttachedHandler()
-        {
-            CalculateRecipe();
-        }
-        
-        private void Slot_OnMaterialDetachedHandler()
-        {
-            CalculateRecipe();
-        }
-        
-        private void OnRecipeChangeHandler(RecipeEnum recipeData)
-        {
-            CalculateRecipe();
-        }
-        
-        private void OutSlot_OnMaterialDetachedHandler()
-        {
-            CalculateRecipe();
         }
 
         #endregion
 
-        public void StopInteraction()
+        #region Printing
+
+        public void Print()
         {
-            OnInteract?.Invoke(false);
+            if(_isPrinting == true) return;
+            if(outMaterialSlot.HasMaterialAttached) return;
+            if (_canPrint == false)
+            {
+                Debug.Log("Can't print the recipe!");
+                return;
+            }
+
+            var recipeData = _recipeManager.GetRecipeDataByEnum(_currentRecipe);
+            _printController.StartPrint(recipeData, _slotsToUse, printerData.TimeToPrint);
+            _isPrinting = true;
+            _canPrint = false;
+        }
+
+        #endregion
+
+
+        #region Handlers
+
+        private void InMaterialSlot_OnMaterialDetachedHandler()
+        {
+            CalculateRecipe();
+        }
+        
+        private void InMaterialSlot_OnMaterialAttachedHandler()
+        {
+            
+        }
+
+        private void OutMaterialSlot_OnMaterialDetachedHandler()
+        {
+            CalculateRecipe();
+        }
+
+        private void RecipeController_OnRecipeChangeHandler(MaterialEnum recipe)
+        {
+            _currentRecipe = recipe;
+            CalculateRecipe();
+            OnRecipeChange?.Invoke(recipe);
+        }
+        
+        private void PrintController_OnPrintEnd()
+        {
+            OnPrintEnd?.Invoke();
+
+            if (_slotsToUse != null)
+            {
+                foreach (var slot in _slotsToUse)
+                {
+                    slot.RemoveMaterial();
+                }
+            }
+        }
+
+        private void PrintController_OnPrintHandler()
+        {
+            OnPrint?.Invoke();
+        }
+
+        #endregion
+    }
+    
+    public class PrintController
+    {
+        private MaterialSlot _outMaterialSlot;
+        private MaterialManager _manager;
+        private RecipeData _recipeToPrint;
+        private float _printTime;
+        private float _timer;
+
+        public UnityAction OnPrinting;
+        public UnityAction OnPrintEnd;
+
+        public PrintController(MaterialSlot outMaterialSlot, MaterialManager manager)
+        {
+            _outMaterialSlot = outMaterialSlot;
+            _manager = manager;
+        }
+
+        public void Initialize()
+        {
+            
+        }
+
+        public void Execute()
+        {
+            if (_timer > 0)
+            {
+                _timer -= Time.deltaTime;
+                
+                if (_timer <= 0)
+                {
+                    OnPrintEnd?.Invoke();
+                }
+            }
+        }
+
+        public void StartPrint(RecipeData recipeData, MaterialSlot[] materialSlots, float printTime = 5)
+        {
+            _recipeToPrint = recipeData;
+            _printTime = printTime;
+            _timer = _printTime;
+
+            if (materialSlots != null)
+            {
+                foreach (var slot in materialSlots)
+                {
+                    var shrinkData = new ScaleData(0f, 1f, _printTime);
+                    slot.ChangeMaterialScale(shrinkData);
+                }
+            }
+
+            CreateOutMaterial();
+            
+            OnPrinting?.Invoke();
+        }
+
+        private void CreateOutMaterial()
+        {
+            var expandData = new ScaleData(1f, 0f, _printTime);
+            var newMaterial = _manager.GetItem(_recipeToPrint.MaterialGotten);
+            _outMaterialSlot.AttachMaterial(newMaterial);
+            _outMaterialSlot.SetMaterialScale(0f);
+            _outMaterialSlot.ChangeMaterialScale(expandData);
+        }
+    }
+
+    public class PrinterRecipeController
+    {
+        public MaterialEnum[] AvailableRecipes { get; private set; }
+
+        private bool _hasRecipes => AvailableRecipes.Length > 0;
+        private int _recipeCount => AvailableRecipes.Length;
+        private float _cycleTimer;
+        private readonly float _cycleDelay = 0.75f;
+        private int _currentIndex;
+        
+        public UnityAction<MaterialEnum> OnRecipeChange;
+
+        public PrinterRecipeController(MaterialEnum[] availableRecipes)
+        {
+            AvailableRecipes = availableRecipes;
+        }
+
+        public void Initialize()
+        {
+            _currentIndex = 0;
+            if (AvailableRecipes.Length > 0)
+            {
+                OnRecipeChange?.Invoke(AvailableRecipes[0]);
+            }
+        }
+
+        public void Execute()
+        {
+            if(_cycleTimer > 0)
+            {
+                _cycleTimer -= Time.deltaTime;
+            }
+        }
+
+        public void CycleRecipes(bool isForward)
+        {
+            if(_hasRecipes == false) return;
+            if(_cycleTimer > 0) return;
+
+            _currentIndex = isForward ? _currentIndex + 1 : _currentIndex - 1;
+
+            if (_currentIndex >= _recipeCount)
+            {
+                _currentIndex = 0;
+            }
+            else if (_currentIndex <= -1)
+            {
+                _currentIndex = _recipeCount - 1;
+            }
+            
+            OnRecipeChange?.Invoke(AvailableRecipes[_currentIndex]);
+
+            _cycleTimer = _cycleDelay;
+        }
+
+        public Tuple<bool, MaterialSlot[]> CalculateRecipe(MaterialSlot[] materialSlots, RecipeData recipeData)
+        {
+            var ingredientsCount = recipeData.MaterialNeededCount;
+
+            //Skips if it is an item dispenser
+            if (ingredientsCount == 1 && recipeData.MaterialNeeded[0] == MaterialEnum.None)
+            {
+                return new Tuple<bool, MaterialSlot[]>(true, null);
+            }
+
+            var ingredientsCheck = 0;
+            MaterialSlot[] slotsToUse = new MaterialSlot[ingredientsCount];
+            bool canPrint = false;
+            
+            for (int i = 0; i < ingredientsCount; i++)
+            {
+                for (int j = 0; j < materialSlots.Length; j++)
+                {
+                    if (recipeData.MaterialNeeded[i] == materialSlots[j].GetAttachedMaterial())
+                    {
+                        ingredientsCheck++;
+                        slotsToUse[i] = materialSlots[j];
+                    }
+                }
+            }
+
+            if (ingredientsCheck == ingredientsCount)
+            {
+                canPrint = true;
+            }
+                
+            return new Tuple<bool, MaterialSlot[]>(canPrint, slotsToUse);
         }
     }
 }

@@ -56,20 +56,12 @@ namespace _Tools.SingleHandledPool
             _list.Add(item);
             IncreaseMaxIndex();
 
-            if (_maxAvailableIndex == 0)
-            {
-                
-            }
-            else
-            {
-                int lastRealIndex = GetLastRealIndex();
-                T tempItem = _list[_maxAvailableIndex];
-                T newItem = _list[lastRealIndex];
-                _list[_maxAvailableIndex] = newItem;
-                _list[lastRealIndex] = tempItem;
-            }
+            int lastRealIndex = GetLastRealIndex();
+            T tempItem = _list[_maxAvailableIndex];
+            T newItem = _list[lastRealIndex];
+            _list[_maxAvailableIndex] = newItem;
+            _list[lastRealIndex] = tempItem;
             
-            item.Reset();
             item.OnDisable += OnDisableHandler;
         }
 
@@ -135,7 +127,7 @@ namespace _Tools.SingleHandledPool
 
         private void OnDisableHandler(T item)
         {
-            item.Reset();
+            item.Disable();
             IncreaseMaxIndex();
         }
     }

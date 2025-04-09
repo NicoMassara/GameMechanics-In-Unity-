@@ -18,16 +18,19 @@
     }
     
     // Every Recipe Item that can be used for crafting *MUST* be in the MaterialEnum
-    public enum RecipeEnum
+    /*public enum RecipeEnum
     {
         None,
+        Red,
+        Green,
+        Blue,
+        White,
         Cyan,
         Magenta,
         Yellow,
-        White,
         Black,
         LightRed,
         LightGreen,
         LightBlue,
-    }
+    }*/
 }

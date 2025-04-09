@@ -6,8 +6,7 @@ namespace _Main.Scripts.AstroneerCrafting
     public interface IInteractable
     {
         public Transform SelfTransform { get;}
-
-        public bool IsQuick { get; }
+        
         public event Action<bool> OnInteract; //bool - false [Interaction End] / bool - true [Interaction Start] 
         
         public void Interact();

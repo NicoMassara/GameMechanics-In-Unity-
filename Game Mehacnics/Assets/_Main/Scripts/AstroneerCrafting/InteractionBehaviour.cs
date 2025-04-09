@@ -15,16 +15,10 @@ namespace _Main.Scripts.AstroneerCrafting
         {
             if(!_hasInteractableInRange) return;
             
-            _interactableInRange.Interact();
-            
-            if (_interactableInRange.IsQuick == false)
-            {
-                Debug.Log("Quick Interaction Performed");
-                return;
-            }
 
             _interactableInRange.OnInteract += Interactable_OnInteractHandler;
             OnInteract?.Invoke(true);
+            _interactableInRange.Interact();
             
             Debug.Log("Interaction Start");
         }

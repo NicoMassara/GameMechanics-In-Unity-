@@ -1,18 +1,19 @@
-﻿using UnityEngine;
+﻿using _Main.Scripts.AstroneerCrafting.Materials;
+using UnityEngine;
 using UnityEngine.Events;
 
-namespace _Main.Scripts.AstroneerCrafting.Materials
+namespace _Main.Scripts.AstroneerCrafting.Printer
 {
     public class MaterialSlot : MonoBehaviour
     {
         [SerializeField] private MaterialObject materialAttached;
         [SerializeField] private Transform attachPoint;
+        [SerializeField] private bool isAttachable;
         
-        public bool _canAttach = true;
+        private bool _canAttach = true;
         private float _canAttachTimer;
         private float _canAttachDelay = 0.5f;
         
-        protected MaterialObject MaterialAttached => materialAttached;
         
         public bool HasMaterialAttached { get; private set; }
 
@@ -38,7 +39,7 @@ namespace _Main.Scripts.AstroneerCrafting.Materials
         
         public MaterialEnum GetAttachedMaterial()
         {
-            return MaterialAttached != null ? MaterialAttached.MaterialType : MaterialEnum.None;
+            return materialAttached != null ? materialAttached.MaterialType : MaterialEnum.None;
         }
         
         public void DetachMaterial()
@@ -49,14 +50,22 @@ namespace _Main.Scripts.AstroneerCrafting.Materials
             ResetAttachValues();
         }
         
+        public void RemoveMaterial()
+        {
+            if(!HasMaterialAttached) return;
+            
+            materialAttached.Disable();
+            ResetAttachValues();
+        }
+        
         public void ChangeMaterialScale(ScaleData scaleData)
         {
-            MaterialAttached.ChangeScale(scaleData);
+            materialAttached.ChangeScale(scaleData);
         }
 
         public void SetMaterialScale(float newScale)
         {
-            MaterialAttached.SetScale(newScale);
+            materialAttached.SetScale(newScale);
         }
 
         protected void ResetAttachValues()
@@ -69,23 +78,23 @@ namespace _Main.Scripts.AstroneerCrafting.Materials
 
         public void AttachMaterial(MaterialObject materialObject)
         {
-            HasMaterialAttached = materialObject != null;
-            
-            if (HasMaterialAttached)
+            if (materialObject != null)
             {
-                materialObject.AttachToSlot(attachPoint);
                 materialAttached = materialObject;
+                materialAttached.AttachToSlot(attachPoint);
+                HasMaterialAttached = true;
                 _canAttach = false;
                 OnMaterialAttached?.Invoke();
             }
             else
             {
-                Debug.Log("No Material Attached To Slot");
+                Debug.Log("Material attached is null");
             }
         }
         
         private void OnTriggerEnter(Collider other)
         {
+            if(!isAttachable) return;
             if(HasMaterialAttached || !_canAttach) return;
             
             if (other.gameObject.TryGetComponent<MaterialObject>(out var materialObject))
