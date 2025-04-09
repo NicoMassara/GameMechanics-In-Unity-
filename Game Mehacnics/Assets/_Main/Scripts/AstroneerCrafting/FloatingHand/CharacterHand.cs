@@ -28,6 +28,7 @@ namespace _Main.Scripts.AstroneerCrafting.FloatingHand
             _hasGrabbed = false;
             
             _colliders = new Collider[10];
+            _cameraOffset = 5;
         }
 
         public void ToggleHand()
@@ -62,11 +63,11 @@ namespace _Main.Scripts.AstroneerCrafting.FloatingHand
             {
                 int hitCount = Physics.OverlapSphereNonAlloc(_mousePosInWorld, checkRadius, _colliders, layerMask);
                 
-                Debug.Log($"Hits: {hitCount}");
+                //Debug.Log($"Hits: {hitCount}");
 
                 for (int i = 0; i < hitCount; i++)
                 {
-                    Debug.Log(_colliders[i].gameObject.name);
+                    //Debug.Log(_colliders[i].gameObject.name);
                     
                     if (_colliders[i].TryGetComponent(out IHandable handable))
                     {
@@ -77,7 +78,7 @@ namespace _Main.Scripts.AstroneerCrafting.FloatingHand
                         }
                         else
                         {
-                            Debug.Log("Can't grab");
+                            //Debug.Log("Can't grab");
                         }
                     }
                 }

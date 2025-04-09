@@ -54,7 +54,7 @@ namespace _Main.Scripts.AstroneerCrafting.Printer
         {
             if(!HasMaterialAttached) return;
             
-            materialAttached.Disable();
+            materialAttached.Recycle();
             ResetAttachValues();
         }
         

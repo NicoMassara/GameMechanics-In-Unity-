@@ -1,15 +1,13 @@
 ﻿using System;
 using _Main.Scripts.AstroneerCrafting.FloatingHand;
 using _Main.Scripts.AstroneerCrafting.Managers;
-using _Tools.SingleHandledPool;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UIElements;
+using _Main.Custom.Pool;
 
 namespace _Main.Scripts.AstroneerCrafting.Materials
 {
-    public class MaterialObject : MonoBehaviour, IPoolable<MaterialObject>, IHandable
+    public class MaterialObject : MonoBehaviour, IHandable, IPoolable<MaterialObject>
     {
         [SerializeField] private MaterialEnum materialType;
         [SerializeField] private MeshRenderer meshRenderer;
@@ -22,7 +20,8 @@ namespace _Main.Scripts.AstroneerCrafting.Materials
         
         public bool CanBeGrabbed { get; private set; }
         public event Action<IHandable> OnForcedRelease;
-        public event Action<MaterialObject> OnDisable;
+        public event UnityAction<MaterialObject> OnRecycle;
+        
         public UnityAction OnDetachedFromSlot;
 
         private void Awake()
@@ -97,15 +96,18 @@ namespace _Main.Scripts.AstroneerCrafting.Materials
             CanBeGrabbed = canBeGrabbed;
         }
 
-        public void Disable()
+        public void Recycle()
         {
+            IsAttached = false;
+            transform.SetParent(null);
+            OnRecycle?.Invoke(this);
             gameObject.SetActive(false);
-            OnDisable?.Invoke(this);
         }   
 
-        public void Enable()
+        public void Reset()
         {
             gameObject.SetActive(true);
+            _rigidbody.isKinematic = false;
         }
         
         public void Grab(Transform newParent)
@@ -114,8 +116,7 @@ namespace _Main.Scripts.AstroneerCrafting.Materials
             {
                DetachFromSlot();
             }
-
-            Debug.Log("Grabbed");
+            
             _rigidbody.isKinematic = true;
             transform.SetParent(newParent);
             transform.localPosition = Vector3.zero;
@@ -127,6 +128,7 @@ namespace _Main.Scripts.AstroneerCrafting.Materials
             transform.parent = null;
             _rigidbody.isKinematic = false;
         }
+        
 
         public void TriggerRelease()
         {

@@ -79,8 +79,8 @@ namespace _Main.Scripts.AstroneerCrafting.Character
                 var mousePosition = _inputs.Hand.HandAxis.ReadValue<Vector2>();
                 _motor.CalculateMouseInWorld(mousePosition);
                 
-                var handAxis = _inputs.Hand.DistanceAxis.ReadValue<float>();
-                _motor.MoveHand(handAxis);
+                var handAxis = _inputs.Hand.DistanceAxis.ReadValue<Vector2>();
+                _motor.MoveHand(handAxis.y);
             }
         }
 

@@ -122,12 +122,12 @@ namespace _Main.Scripts.AstroneerCrafting.Printer
 
         #region Handlers
 
-        private void InMaterialSlot_OnMaterialDetachedHandler()
+        private void InMaterialSlot_OnMaterialAttachedHandler()
         {
             CalculateRecipe();
         }
         
-        private void InMaterialSlot_OnMaterialAttachedHandler()
+        private void InMaterialSlot_OnMaterialDetachedHandler()
         {
             
         }
@@ -156,6 +156,7 @@ namespace _Main.Scripts.AstroneerCrafting.Printer
                 }
             }
 
+            _isPrinting = false;
             outMaterialSlot.SetCanBeGrabbed(true);
         }
 
