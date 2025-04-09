@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using _Main.Scripts.AstroneerCrafting.Managers;
 using _Main.Scripts.Locomotion;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 namespace _Main.Scripts.AstroneerCrafting.Character
@@ -11,21 +14,52 @@ namespace _Main.Scripts.AstroneerCrafting.Character
         [SerializeField] private CharacterCamera characterCamera;
         private AstroneerCharacterMotor _motor;
         private AC_CharacterInputActions _inputs;
+        private Dictionary<CharacterInputType, InputData> _inputDic = new Dictionary<CharacterInputType, InputData>();
+        private InputData _currentInput;
 
         private void Awake()
         {
             _motor = GetComponent<AstroneerCharacterMotor>();
             _inputs = new AC_CharacterInputActions();
+            _motor.OnHandEnable += Motor_OnHandEnableHandler;
+        }
 
-            _motor.OnInteract += OnInteractHandler;
+        private void Motor_OnHandEnableHandler(bool isEnable)
+        {
+            var newInput = isEnable ? CharacterInputType.Hand : CharacterInputType.Default;
+            ChangeInput(newInput);
         }
 
         private void Start()
         {
+            _motor.OnInteract += OnInteractHandler;
             _inputs.Default.Interact.performed += IA_Default_Interact_PerformedHandler;
+            _inputs.Default.StartHand.performed += IA_Default_StartHand_PerformedHandler;
+            _inputs.Hand.Leave.performed += IA_Hand_Leave_PerformedHandler;
+            _inputs.Hand.Grab.performed += IA_Hand_Grab_PerformedHandler;
             
-            EnableInputs();
+            _inputDic.Add(CharacterInputType.Default, new InputData(CharacterInputType.Default, _inputs.Default.Enable, _inputs.Default.Disable));
+            _inputDic.Add(CharacterInputType.Interaction, new InputData(CharacterInputType.Interaction, _inputs.Printer.Enable, _inputs.Printer.Disable));
+            _inputDic.Add(CharacterInputType.Hand, new InputData(CharacterInputType.Hand, _inputs.Hand.Enable, _inputs.Hand.Disable));
+
+            ChangeInput(CharacterInputType.Default);
         }
+
+        private void IA_Hand_Grab_PerformedHandler(InputAction.CallbackContext obj)
+        {
+            _motor.GrabHand();
+        }
+
+        private void IA_Hand_Leave_PerformedHandler(InputAction.CallbackContext obj)
+        {
+            _motor.ToggleHand();
+        }
+
+        private void IA_Default_StartHand_PerformedHandler(InputAction.CallbackContext obj)
+        {
+            _motor.ToggleHand();
+        }
+
 
         private void FixedUpdate()
         {
@@ -35,36 +69,71 @@ namespace _Main.Scripts.AstroneerCrafting.Character
 
         private void LateUpdate()
         {
-            var cameraAxis = _inputs.Default.CameraAxis.ReadValue<Vector2>();
-            characterCamera.HandleMovement(cameraAxis);
-        }
-        
-        private void EnableInputs()
-        {
-            GameManager.Instance.CameraManager.SetActiveCamera(characterCamera.gameObject.GetComponent<Camera>());
-            _inputs.Default.Enable();
+            if (_currentInput.InputType == CharacterInputType.Default)
+            {
+                var cameraAxis = _inputs.Default.CameraAxis.ReadValue<Vector2>();
+                characterCamera.HandleMovement(cameraAxis);
+            }
+            else if (_currentInput.InputType == CharacterInputType.Hand)
+            {
+                var mousePosition = _inputs.Hand.HandAxis.ReadValue<Vector2>();
+                _motor.CalculateMouseInWorld(mousePosition);
+                
+                var handAxis = _inputs.Hand.DistanceAxis.ReadValue<float>();
+                _motor.MoveHand(handAxis);
+            }
         }
 
-        private void DisableInputs()
+        private void ChangeInput(CharacterInputType inputType)
         {
-            _inputs.Default.Disable();
+            if (_currentInput != null)
+            {
+                _currentInput.DisableInput();
+            }
+
+            _currentInput = _inputDic[inputType];
+            _currentInput.EnableInput();
         }
 
         private void OnInteractHandler(bool hasStarted)
         {
-            if (hasStarted)
+            var newInput = hasStarted ? CharacterInputType.Interaction : CharacterInputType.Default;
+
+            if (hasStarted == false)
             {
-                DisableInputs();
+                GameManager.Instance.CameraManager.SetActiveCamera(characterCamera.SelfCamera);
             }
-            else
-            {
-                EnableInputs();
-            }
+
+            ChangeInput(newInput);
         }
         
         private void IA_Default_Interact_PerformedHandler(InputAction.CallbackContext obj)
         {
             _motor.StartInteraction();
         }
+    }
+
+    public class InputData
+    {
+        public CharacterInputType InputType { get; private set; }
+
+        public delegate void InputDelegate();
+
+        public InputDelegate EnableInput { get; private set;}
+        public InputDelegate DisableInput { get; private set; }
+
+        public InputData(CharacterInputType inputType, InputDelegate enableInput, InputDelegate disableInput)
+        {
+            EnableInput = enableInput;
+            DisableInput = disableInput;
+            InputType = inputType;
+        }
+    }
+
+    public enum CharacterInputType
+    {
+        Default,
+        Interaction,
+        Hand
     }
 }

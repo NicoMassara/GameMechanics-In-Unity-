@@ -53,6 +53,15 @@ public partial class @AC_CharacterInputActions: IInputActionCollection2, IDispos
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""StartHand"",
+                    ""type"": ""Button"",
+                    ""id"": ""2c7e9a6b-2d0b-4fb6-9dde-fc7b70a9d063"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -163,6 +172,28 @@ public partial class @AC_CharacterInputActions: IInputActionCollection2, IDispos
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5ff2798f-5934-4c09-89f7-02954050ee7f"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""StartHand"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0d988cd0-0af5-4b84-98a5-0fef6ae9c568"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""StartHand"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -345,6 +376,149 @@ public partial class @AC_CharacterInputActions: IInputActionCollection2, IDispos
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Hand"",
+            ""id"": ""2c344893-ce0e-4f9d-91de-f42cafacd63a"",
+            ""actions"": [
+                {
+                    ""name"": ""HandAxis"",
+                    ""type"": ""Value"",
+                    ""id"": ""dcfc65ed-50d0-4afb-8ed0-bfacff4f9ff0"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Grab"",
+                    ""type"": ""Button"",
+                    ""id"": ""35946c05-6665-4997-8af4-864b2b3f9e17"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Leave"",
+                    ""type"": ""Button"",
+                    ""id"": ""94bf3c50-8d99-4394-82cb-b38c752a1e29"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""DistanceAxis"",
+                    ""type"": ""Value"",
+                    ""id"": ""08e65219-d383-4578-a92d-de1008fa0985"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""a7247b30-ad31-4183-980c-da59aadd1ff7"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""HandAxis"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d9e19638-6697-43f5-a81e-e5fa6908611c"",
+                    ""path"": ""<Gamepad>/rightStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""HandAxis"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b1e0e5a5-b6a7-4731-80f7-2d8fee4ee2bd"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Grab"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""557fa94b-f149-49c8-be9c-3cd8387c69db"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Grab"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6cdbb247-77f8-4c76-8a08-1302cc7f92ca"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Leave"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5bf09ba0-8e8b-4aa0-a535-02fd8e384501"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Leave"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""ff59c920-8f64-46b2-9846-97df29c627f8"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DistanceAxis"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""00422115-cefe-4fe8-916f-130d9e883b83"",
+                    ""path"": ""<Keyboard>/upArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""DistanceAxis"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""4692eed1-0b2c-4558-a502-bdee5b92d634"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""DistanceAxis"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -382,11 +556,18 @@ public partial class @AC_CharacterInputActions: IInputActionCollection2, IDispos
         m_Default_MovementAxis = m_Default.FindAction("MovementAxis", throwIfNotFound: true);
         m_Default_CameraAxis = m_Default.FindAction("CameraAxis", throwIfNotFound: true);
         m_Default_Interact = m_Default.FindAction("Interact", throwIfNotFound: true);
+        m_Default_StartHand = m_Default.FindAction("StartHand", throwIfNotFound: true);
         // Printer
         m_Printer = asset.FindActionMap("Printer", throwIfNotFound: true);
         m_Printer_CycleRecipe = m_Printer.FindAction("CycleRecipe", throwIfNotFound: true);
         m_Printer_Print = m_Printer.FindAction("Print", throwIfNotFound: true);
         m_Printer_Leave = m_Printer.FindAction("Leave", throwIfNotFound: true);
+        // Hand
+        m_Hand = asset.FindActionMap("Hand", throwIfNotFound: true);
+        m_Hand_HandAxis = m_Hand.FindAction("HandAxis", throwIfNotFound: true);
+        m_Hand_Grab = m_Hand.FindAction("Grab", throwIfNotFound: true);
+        m_Hand_Leave = m_Hand.FindAction("Leave", throwIfNotFound: true);
+        m_Hand_DistanceAxis = m_Hand.FindAction("DistanceAxis", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -451,6 +632,7 @@ public partial class @AC_CharacterInputActions: IInputActionCollection2, IDispos
     private readonly InputAction m_Default_MovementAxis;
     private readonly InputAction m_Default_CameraAxis;
     private readonly InputAction m_Default_Interact;
+    private readonly InputAction m_Default_StartHand;
     public struct DefaultActions
     {
         private @AC_CharacterInputActions m_Wrapper;
@@ -458,6 +640,7 @@ public partial class @AC_CharacterInputActions: IInputActionCollection2, IDispos
         public InputAction @MovementAxis => m_Wrapper.m_Default_MovementAxis;
         public InputAction @CameraAxis => m_Wrapper.m_Default_CameraAxis;
         public InputAction @Interact => m_Wrapper.m_Default_Interact;
+        public InputAction @StartHand => m_Wrapper.m_Default_StartHand;
         public InputActionMap Get() { return m_Wrapper.m_Default; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -476,6 +659,9 @@ public partial class @AC_CharacterInputActions: IInputActionCollection2, IDispos
             @Interact.started += instance.OnInteract;
             @Interact.performed += instance.OnInteract;
             @Interact.canceled += instance.OnInteract;
+            @StartHand.started += instance.OnStartHand;
+            @StartHand.performed += instance.OnStartHand;
+            @StartHand.canceled += instance.OnStartHand;
         }
 
         private void UnregisterCallbacks(IDefaultActions instance)
@@ -489,6 +675,9 @@ public partial class @AC_CharacterInputActions: IInputActionCollection2, IDispos
             @Interact.started -= instance.OnInteract;
             @Interact.performed -= instance.OnInteract;
             @Interact.canceled -= instance.OnInteract;
+            @StartHand.started -= instance.OnStartHand;
+            @StartHand.performed -= instance.OnStartHand;
+            @StartHand.canceled -= instance.OnStartHand;
         }
 
         public void RemoveCallbacks(IDefaultActions instance)
@@ -568,6 +757,76 @@ public partial class @AC_CharacterInputActions: IInputActionCollection2, IDispos
         }
     }
     public PrinterActions @Printer => new PrinterActions(this);
+
+    // Hand
+    private readonly InputActionMap m_Hand;
+    private List<IHandActions> m_HandActionsCallbackInterfaces = new List<IHandActions>();
+    private readonly InputAction m_Hand_HandAxis;
+    private readonly InputAction m_Hand_Grab;
+    private readonly InputAction m_Hand_Leave;
+    private readonly InputAction m_Hand_DistanceAxis;
+    public struct HandActions
+    {
+        private @AC_CharacterInputActions m_Wrapper;
+        public HandActions(@AC_CharacterInputActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @HandAxis => m_Wrapper.m_Hand_HandAxis;
+        public InputAction @Grab => m_Wrapper.m_Hand_Grab;
+        public InputAction @Leave => m_Wrapper.m_Hand_Leave;
+        public InputAction @DistanceAxis => m_Wrapper.m_Hand_DistanceAxis;
+        public InputActionMap Get() { return m_Wrapper.m_Hand; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(HandActions set) { return set.Get(); }
+        public void AddCallbacks(IHandActions instance)
+        {
+            if (instance == null || m_Wrapper.m_HandActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_HandActionsCallbackInterfaces.Add(instance);
+            @HandAxis.started += instance.OnHandAxis;
+            @HandAxis.performed += instance.OnHandAxis;
+            @HandAxis.canceled += instance.OnHandAxis;
+            @Grab.started += instance.OnGrab;
+            @Grab.performed += instance.OnGrab;
+            @Grab.canceled += instance.OnGrab;
+            @Leave.started += instance.OnLeave;
+            @Leave.performed += instance.OnLeave;
+            @Leave.canceled += instance.OnLeave;
+            @DistanceAxis.started += instance.OnDistanceAxis;
+            @DistanceAxis.performed += instance.OnDistanceAxis;
+            @DistanceAxis.canceled += instance.OnDistanceAxis;
+        }
+
+        private void UnregisterCallbacks(IHandActions instance)
+        {
+            @HandAxis.started -= instance.OnHandAxis;
+            @HandAxis.performed -= instance.OnHandAxis;
+            @HandAxis.canceled -= instance.OnHandAxis;
+            @Grab.started -= instance.OnGrab;
+            @Grab.performed -= instance.OnGrab;
+            @Grab.canceled -= instance.OnGrab;
+            @Leave.started -= instance.OnLeave;
+            @Leave.performed -= instance.OnLeave;
+            @Leave.canceled -= instance.OnLeave;
+            @DistanceAxis.started -= instance.OnDistanceAxis;
+            @DistanceAxis.performed -= instance.OnDistanceAxis;
+            @DistanceAxis.canceled -= instance.OnDistanceAxis;
+        }
+
+        public void RemoveCallbacks(IHandActions instance)
+        {
+            if (m_Wrapper.m_HandActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IHandActions instance)
+        {
+            foreach (var item in m_Wrapper.m_HandActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_HandActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public HandActions @Hand => new HandActions(this);
     private int m_KeyboardSchemeIndex = -1;
     public InputControlScheme KeyboardScheme
     {
@@ -591,11 +850,19 @@ public partial class @AC_CharacterInputActions: IInputActionCollection2, IDispos
         void OnMovementAxis(InputAction.CallbackContext context);
         void OnCameraAxis(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
+        void OnStartHand(InputAction.CallbackContext context);
     }
     public interface IPrinterActions
     {
         void OnCycleRecipe(InputAction.CallbackContext context);
         void OnPrint(InputAction.CallbackContext context);
         void OnLeave(InputAction.CallbackContext context);
+    }
+    public interface IHandActions
+    {
+        void OnHandAxis(InputAction.CallbackContext context);
+        void OnGrab(InputAction.CallbackContext context);
+        void OnLeave(InputAction.CallbackContext context);
+        void OnDistanceAxis(InputAction.CallbackContext context);
     }
 }

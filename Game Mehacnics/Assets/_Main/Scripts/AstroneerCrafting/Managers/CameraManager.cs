@@ -6,6 +6,11 @@ namespace _Main.Scripts.AstroneerCrafting.Managers
     {
         private Camera _currentCamera;
 
+        public Camera GetActiveCamera()
+        {
+            return _currentCamera;
+        }
+
         public void SetActiveCamera(Camera newActiveCamera)
         {
             if (_currentCamera != null)

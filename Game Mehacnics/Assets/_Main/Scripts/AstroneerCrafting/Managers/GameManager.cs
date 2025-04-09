@@ -38,5 +38,20 @@ namespace _Main.Scripts.AstroneerCrafting.Managers
         {
             return Instantiate(materialPrefab);
         }
+
+        public void SetEnableMouse(bool isEnable)
+        {
+            if (isEnable)
+            {
+                Cursor.lockState = CursorLockMode.Confined;
+                Cursor.visible = true;
+            }
+            else
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
+
+        }
     }
 }

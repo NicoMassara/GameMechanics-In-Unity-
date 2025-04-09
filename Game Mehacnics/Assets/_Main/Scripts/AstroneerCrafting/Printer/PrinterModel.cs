@@ -155,6 +155,8 @@ namespace _Main.Scripts.AstroneerCrafting.Printer
                     slot.RemoveMaterial();
                 }
             }
+
+            outMaterialSlot.SetCanBeGrabbed(true);
         }
 
         private void PrintController_OnPrintHandler()
@@ -212,6 +214,7 @@ namespace _Main.Scripts.AstroneerCrafting.Printer
                 {
                     var shrinkData = new ScaleData(0f, 1f, _printTime);
                     slot.ChangeMaterialScale(shrinkData);
+                    slot.SetCanBeGrabbed(false);
                 }
             }
 
@@ -225,6 +228,7 @@ namespace _Main.Scripts.AstroneerCrafting.Printer
             var expandData = new ScaleData(1f, 0f, _printTime);
             var newMaterial = _manager.GetItem(_recipeToPrint.MaterialGotten);
             _outMaterialSlot.AttachMaterial(newMaterial);
+            _outMaterialSlot.SetCanBeGrabbed(false);
             _outMaterialSlot.SetMaterialScale(0f);
             _outMaterialSlot.ChangeMaterialScale(expandData);
         }

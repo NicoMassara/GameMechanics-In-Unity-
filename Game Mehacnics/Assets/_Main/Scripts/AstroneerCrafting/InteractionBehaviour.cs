@@ -20,7 +20,7 @@ namespace _Main.Scripts.AstroneerCrafting
             OnInteract?.Invoke(true);
             _interactableInRange.Interact();
             
-            Debug.Log("Interaction Start");
+            //Debug.Log("Interaction Start");
         }
 
         public void StopInteraction()
@@ -28,7 +28,7 @@ namespace _Main.Scripts.AstroneerCrafting
             _interactableInRange.OnInteract -= Interactable_OnInteractHandler;
             OnInteract?.Invoke(false);
             
-            Debug.Log("Interaction End");
+            //Debug.Log("Interaction End");
         }
 
         private void OnTriggerEnter(Collider other)

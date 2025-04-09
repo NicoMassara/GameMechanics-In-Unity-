@@ -82,6 +82,7 @@ namespace _Main.Scripts.AstroneerCrafting.Printer
             {
                 materialAttached = materialObject;
                 materialAttached.AttachToSlot(attachPoint);
+                materialAttached.OnDetachedFromSlot += Material_OnDetachedFromSlotHandler;
                 HasMaterialAttached = true;
                 _canAttach = false;
                 OnMaterialAttached?.Invoke();
@@ -91,7 +92,12 @@ namespace _Main.Scripts.AstroneerCrafting.Printer
                 Debug.Log("Material attached is null");
             }
         }
-        
+
+        private void Material_OnDetachedFromSlotHandler()
+        {
+            ResetAttachValues();
+        }
+
         private void OnTriggerEnter(Collider other)
         {
             if(!isAttachable) return;
@@ -101,6 +107,11 @@ namespace _Main.Scripts.AstroneerCrafting.Printer
             {
                 AttachMaterial(materialObject);
             }
+        }
+
+        public void SetCanBeGrabbed(bool canBeGrabbed)
+        {
+            materialAttached.SetCanBeGrabbed(canBeGrabbed);
         }
     }
 }

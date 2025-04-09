@@ -1,4 +1,5 @@
 ﻿using System;
+using _Main.Scripts.AstroneerCrafting.Managers;
 using _Main.Scripts.Locomotion;
 using UnityEngine;
 
@@ -15,7 +16,8 @@ namespace _Main.Scripts.AstroneerCrafting.Character
         private Vector2 _lookDirection;
         private float _finalViewSpeed;
         private Transform _characterTransform;
-        
+        public Camera SelfCamera { get; private set; }
+
         private void Start()
         {
             characterMotor.SetCamera(transform);
@@ -30,6 +32,9 @@ namespace _Main.Scripts.AstroneerCrafting.Character
             
             _finalViewSpeed = viewSpeed * 10;
             
+            SelfCamera = GetComponent<Camera>();
+            
+            GameManager.Instance.CameraManager.SetActiveCamera(SelfCamera);
         }
 
         public void HandleMovement(Vector2 viewDirection)
