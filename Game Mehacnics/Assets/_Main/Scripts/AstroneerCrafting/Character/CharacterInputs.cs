@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using _Main.Scripts.AstroneerCrafting.Managers;
-using _Main.Scripts.Locomotion;
-using Unity.VisualScripting;
+using _Main.Scripts.AstroneerCrafting.ScreenMouse;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 namespace _Main.Scripts.AstroneerCrafting.Character
@@ -12,6 +9,7 @@ namespace _Main.Scripts.AstroneerCrafting.Character
     public class CharacterInputs : MonoBehaviour
     {
         [SerializeField] private CharacterCamera characterCamera;
+        [SerializeField] private VirtualMouse virtualMouse;
         private AstroneerCharacterMotor _motor;
         private AC_CharacterInputActions _inputs;
         private Dictionary<CharacterInputType, InputData> _inputDic = new Dictionary<CharacterInputType, InputData>();
@@ -22,12 +20,6 @@ namespace _Main.Scripts.AstroneerCrafting.Character
             _motor = GetComponent<AstroneerCharacterMotor>();
             _inputs = new AC_CharacterInputActions();
             _motor.OnHandEnable += Motor_OnHandEnableHandler;
-        }
-
-        private void Motor_OnHandEnableHandler(bool isEnable)
-        {
-            var newInput = isEnable ? CharacterInputType.Hand : CharacterInputType.Default;
-            ChangeInput(newInput);
         }
 
         private void Start()
@@ -43,6 +35,7 @@ namespace _Main.Scripts.AstroneerCrafting.Character
             _inputDic.Add(CharacterInputType.Hand, new InputData(CharacterInputType.Hand, _inputs.Hand.Enable, _inputs.Hand.Disable));
 
             ChangeInput(CharacterInputType.Default);
+            virtualMouse.SetEnable(false);
         }
 
         private void IA_Hand_Grab_PerformedHandler(InputAction.CallbackContext obj)
@@ -76,11 +69,12 @@ namespace _Main.Scripts.AstroneerCrafting.Character
             }
             else if (_currentInput.InputType == CharacterInputType.Hand)
             {
-                var mousePosition = _inputs.Hand.HandAxis.ReadValue<Vector2>();
-                _motor.CalculateMouseInWorld(mousePosition);
+                var mouseDelta = _inputs.Hand.HandAxis.ReadValue<Vector2>();
+                virtualMouse.Move(mouseDelta);
+                _motor.CalculateMouseInWorld(virtualMouse.GetOffsetScreenPosition());
                 
-                var handAxis = _inputs.Hand.DistanceAxis.ReadValue<Vector2>();
-                _motor.MoveHand(handAxis.y);
+                var distanceAxis = _inputs.Hand.DistanceAxis.ReadValue<Vector2>();
+                _motor.MoveHand(distanceAxis.y);
             }
         }
 
@@ -110,6 +104,13 @@ namespace _Main.Scripts.AstroneerCrafting.Character
         private void IA_Default_Interact_PerformedHandler(InputAction.CallbackContext obj)
         {
             _motor.StartInteraction();
+        }
+        
+        private void Motor_OnHandEnableHandler(bool isEnable)
+        {
+            var newInput = isEnable ? CharacterInputType.Hand : CharacterInputType.Default;
+            ChangeInput(newInput);
+            virtualMouse.SetEnable(isEnable);
         }
     }
 

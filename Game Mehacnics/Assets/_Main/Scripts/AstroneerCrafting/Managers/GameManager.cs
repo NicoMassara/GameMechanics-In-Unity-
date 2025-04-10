@@ -44,14 +44,13 @@ namespace _Main.Scripts.AstroneerCrafting.Managers
             if (isEnable)
             {
                 Cursor.lockState = CursorLockMode.Confined;
-                Cursor.visible = true;
+                //Cursor.visible = true;
             }
             else
             {
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
             }
-
         }
     }
 }

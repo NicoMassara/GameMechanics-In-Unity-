@@ -422,7 +422,7 @@ public partial class @AC_CharacterInputActions: IInputActionCollection2, IDispos
                 {
                     ""name"": """",
                     ""id"": ""a7247b30-ad31-4183-980c-da59aadd1ff7"",
-                    ""path"": ""<Mouse>/position"",
+                    ""path"": ""<Mouse>/delta"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard"",
@@ -489,6 +489,17 @@ public partial class @AC_CharacterInputActions: IInputActionCollection2, IDispos
                     ""name"": """",
                     ""id"": ""ae885a27-24ae-47b2-83f8-761a63dcf012"",
                     ""path"": ""<Mouse>/scroll"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DistanceAxis"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""21e41d6c-9033-4c73-aa16-c41081cc63f8"",
+                    ""path"": ""<Gamepad>/leftStick"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
