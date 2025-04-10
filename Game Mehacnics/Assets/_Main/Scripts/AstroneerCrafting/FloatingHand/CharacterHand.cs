@@ -18,6 +18,7 @@ namespace _Main.Scripts.AstroneerCrafting.FloatingHand
         private float _cameraOffset;
         private bool _isEnable;
         private bool _hasGrabbed;
+        private bool _hasHitObject;
         private IHandable _itemGrabbed;
         private Vector3 _mousePosInWorld;
         public UnityAction<bool> OnHandEnable;
@@ -59,26 +60,18 @@ namespace _Main.Scripts.AstroneerCrafting.FloatingHand
                     ReleaseItem();
                 }
             }
-            else
+            else if(_hasHitObject)
             {
                 int hitCount = Physics.OverlapSphereNonAlloc(_mousePosInWorld, checkRadius, _colliders, layerMask);
                 
-                //Debug.Log($"Hits: {hitCount}");
-
                 for (int i = 0; i < hitCount; i++)
                 {
-                    //Debug.Log(_colliders[i].gameObject.name);
-                    
                     if (_colliders[i].TryGetComponent(out IHandable handable))
                     {
                         if (handable.CanBeGrabbed)
                         {
                             AttachItemToHand(handable);
                             break;
-                        }
-                        else
-                        {
-                            //Debug.Log("Can't grab");
                         }
                     }
                 }
@@ -94,6 +87,7 @@ namespace _Main.Scripts.AstroneerCrafting.FloatingHand
 
         private void AttachItemToHand(IHandable item)
         {
+            _cameraOffset = maxOffset.y / 2;
             _hasGrabbed = true;
             _itemGrabbed = item;
             _itemGrabbed.Grab(handSlot);
@@ -114,7 +108,12 @@ namespace _Main.Scripts.AstroneerCrafting.FloatingHand
                 
                 if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask))
                 {
+                    _hasHitObject = true;
                     _mousePosInWorld = hit.point;
+                }
+                else
+                {
+                    _hasHitObject = false;
                 }
             }
         }

@@ -31,7 +31,6 @@ namespace _Main.Scripts.AstroneerCrafting.ScreenMouse
             deltaY = Mathf.Clamp(deltaY, -_windowHeight/2, _windowHeight/2);
             
             ScreenPosition = new Vector2(deltaX, deltaY);
-            Debug.Log(ScreenPosition);
             mousePointer.GetComponent<RectTransform>().anchoredPosition = ScreenPosition;
         }
 

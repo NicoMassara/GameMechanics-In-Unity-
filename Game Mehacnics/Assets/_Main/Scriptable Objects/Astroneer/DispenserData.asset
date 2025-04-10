@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3fdea37a9537486aac7eccae5486f895, type: 3}
   m_Name: DispenserData
   m_EditorClassIdentifier: 
-  timeToPrint: 5
+  timeToPrint: 2
   availableRecipes: 010000000200000003000000

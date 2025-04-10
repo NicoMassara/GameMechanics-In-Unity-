@@ -391,6 +391,15 @@ public partial class @AC_CharacterInputActions: IInputActionCollection2, IDispos
                     ""initialStateCheck"": true
                 },
                 {
+                    ""name"": ""MovementAxis"",
+                    ""type"": ""Value"",
+                    ""id"": ""ff217557-ed36-4d02-914f-9fe9bd452fe2"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": ""NormalizeVector2"",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
                     ""name"": ""Grab"",
                     ""type"": ""Button"",
                     ""id"": ""35946c05-6665-4997-8af4-864b2b3f9e17"",
@@ -491,19 +500,107 @@ public partial class @AC_CharacterInputActions: IInputActionCollection2, IDispos
                     ""path"": ""<Mouse>/scroll"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard"",
                     ""action"": ""DistanceAxis"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": """",
-                    ""id"": ""21e41d6c-9033-4c73-aa16-c41081cc63f8"",
-                    ""path"": ""<Gamepad>/leftStick"",
+                    ""name"": ""2D Vector"",
+                    ""id"": ""bf143963-38ad-4896-9c89-b3461ce030ec"",
+                    ""path"": ""2DVector"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""DistanceAxis"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""08636317-c551-4cd9-b0f2-5def4b4805b3"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""DistanceAxis"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""99495abf-bcbd-4e66-a371-1ab39c1844d6"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""DistanceAxis"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""e4d77d3b-ef6e-41a1-8906-496c9b1ee5df"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MovementAxis"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""be091780-a868-4654-86ec-be932c446d10"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""MovementAxis"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""cb396d53-4cbe-4af7-bb29-3b01840d1f17"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""MovementAxis"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""30c59f9f-483d-424e-a137-7a514c6324e8"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""MovementAxis"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""56b1ecb3-dbf7-4989-9179-2a3124c368dd"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""MovementAxis"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""60e8dea1-3fc2-43db-8156-243abdca156e"",
+                    ""path"": ""<Gamepad>/leftStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""MovementAxis"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -554,6 +651,7 @@ public partial class @AC_CharacterInputActions: IInputActionCollection2, IDispos
         // Hand
         m_Hand = asset.FindActionMap("Hand", throwIfNotFound: true);
         m_Hand_HandAxis = m_Hand.FindAction("HandAxis", throwIfNotFound: true);
+        m_Hand_MovementAxis = m_Hand.FindAction("MovementAxis", throwIfNotFound: true);
         m_Hand_Grab = m_Hand.FindAction("Grab", throwIfNotFound: true);
         m_Hand_Leave = m_Hand.FindAction("Leave", throwIfNotFound: true);
         m_Hand_DistanceAxis = m_Hand.FindAction("DistanceAxis", throwIfNotFound: true);
@@ -751,6 +849,7 @@ public partial class @AC_CharacterInputActions: IInputActionCollection2, IDispos
     private readonly InputActionMap m_Hand;
     private List<IHandActions> m_HandActionsCallbackInterfaces = new List<IHandActions>();
     private readonly InputAction m_Hand_HandAxis;
+    private readonly InputAction m_Hand_MovementAxis;
     private readonly InputAction m_Hand_Grab;
     private readonly InputAction m_Hand_Leave;
     private readonly InputAction m_Hand_DistanceAxis;
@@ -759,6 +858,7 @@ public partial class @AC_CharacterInputActions: IInputActionCollection2, IDispos
         private @AC_CharacterInputActions m_Wrapper;
         public HandActions(@AC_CharacterInputActions wrapper) { m_Wrapper = wrapper; }
         public InputAction @HandAxis => m_Wrapper.m_Hand_HandAxis;
+        public InputAction @MovementAxis => m_Wrapper.m_Hand_MovementAxis;
         public InputAction @Grab => m_Wrapper.m_Hand_Grab;
         public InputAction @Leave => m_Wrapper.m_Hand_Leave;
         public InputAction @DistanceAxis => m_Wrapper.m_Hand_DistanceAxis;
@@ -774,6 +874,9 @@ public partial class @AC_CharacterInputActions: IInputActionCollection2, IDispos
             @HandAxis.started += instance.OnHandAxis;
             @HandAxis.performed += instance.OnHandAxis;
             @HandAxis.canceled += instance.OnHandAxis;
+            @MovementAxis.started += instance.OnMovementAxis;
+            @MovementAxis.performed += instance.OnMovementAxis;
+            @MovementAxis.canceled += instance.OnMovementAxis;
             @Grab.started += instance.OnGrab;
             @Grab.performed += instance.OnGrab;
             @Grab.canceled += instance.OnGrab;
@@ -790,6 +893,9 @@ public partial class @AC_CharacterInputActions: IInputActionCollection2, IDispos
             @HandAxis.started -= instance.OnHandAxis;
             @HandAxis.performed -= instance.OnHandAxis;
             @HandAxis.canceled -= instance.OnHandAxis;
+            @MovementAxis.started -= instance.OnMovementAxis;
+            @MovementAxis.performed -= instance.OnMovementAxis;
+            @MovementAxis.canceled -= instance.OnMovementAxis;
             @Grab.started -= instance.OnGrab;
             @Grab.performed -= instance.OnGrab;
             @Grab.canceled -= instance.OnGrab;
@@ -850,6 +956,7 @@ public partial class @AC_CharacterInputActions: IInputActionCollection2, IDispos
     public interface IHandActions
     {
         void OnHandAxis(InputAction.CallbackContext context);
+        void OnMovementAxis(InputAction.CallbackContext context);
         void OnGrab(InputAction.CallbackContext context);
         void OnLeave(InputAction.CallbackContext context);
         void OnDistanceAxis(InputAction.CallbackContext context);

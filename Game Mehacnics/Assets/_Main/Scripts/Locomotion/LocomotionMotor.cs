@@ -39,7 +39,7 @@ namespace _Main.Scripts.Locomotion
             MoveCharacter();
         }
 
-        public void HandleMovement(Vector2 direction)
+        public void HandleMovement(Vector2 direction, float multiplier = 1)
         {
             if(_cameraTransform == null) return;
             
@@ -63,7 +63,7 @@ namespace _Main.Scripts.Locomotion
             camRight.y = 0f;
             camRight.Normalize();
             
-            _movementDirection = (camForward * inputDirection.z + camRight * inputDirection.x).normalized;
+            _movementDirection = (camForward * inputDirection.z + camRight * inputDirection.x).normalized * multiplier;
         }
 
         private void MoveCharacter()

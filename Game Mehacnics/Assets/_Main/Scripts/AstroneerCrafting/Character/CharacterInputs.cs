@@ -56,8 +56,16 @@ namespace _Main.Scripts.AstroneerCrafting.Character
 
         private void FixedUpdate()
         {
-            var movementAxis = _inputs.Default.MovementAxis.ReadValue<Vector2>();
-            _motor.HandleMovement(movementAxis);
+            if (_currentInput.InputType == CharacterInputType.Default)
+            {
+                var movementAxis = _inputs.Default.MovementAxis.ReadValue<Vector2>();
+                _motor.HandleMovement(movementAxis);
+            }
+            else if (_currentInput.InputType == CharacterInputType.Hand)
+            {
+                var movementAxis = _inputs.Hand.MovementAxis.ReadValue<Vector2>();
+                _motor.HandleMovement(movementAxis, 0.55f);
+            }
         }
 
         private void LateUpdate()

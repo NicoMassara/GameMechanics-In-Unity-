@@ -52,4 +52,5 @@ namespace _Main.Scripts.AstroneerCrafting.Character
             transform.LookAt(_characterTransform);
         }
     }
+        
 }
